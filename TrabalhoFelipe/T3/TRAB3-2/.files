@@ -1,0 +1,14 @@
+JogarXadrez.bat
+
+MAIN.C
+..\TRAB3-1\JOGO.C
+..\TRAB3-1\JOGO.H
+..\TRAB3-1\TABULEIRO.C
+..\TRAB3-1\TABULEIRO.H
+..\TRAB3-1\LISTA.C
+..\TRAB3-1\LISTA.H
+
+PecasTabuleiro.txt
+PecasXadrez.txt
+
+TRAB3-2.exe

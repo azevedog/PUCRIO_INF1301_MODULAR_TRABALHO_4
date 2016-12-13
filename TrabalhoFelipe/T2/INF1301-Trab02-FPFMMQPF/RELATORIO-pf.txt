@@ -1,0 +1,11 @@
+Data	Horas Trabalhadas	Tipo Tarefa			Descrição da Tarefa Realizada
+21/09   1                   Estudar             Estudo do enunciado
+21/09   1                   Projetar            Definição da abordagem a ser utilizada na resolução do problema
+25/9    2                   Estudar             Estudo sobre a implementação de peças já existentes e de novas.
+25/9    2                   Implementar         Implementado os structs essenciais para peças e desenvolvido o prototipo do .txt contendo as peças.
+29/9    2                   Implementar         Implementação da função para ler arquivos do .txt peças.
+01/10   9                   Implementar         Implementação de quase todas as funções do tabuleiro.     
+02/10   4                   Implementar         Implementação de mais funções do tabuleiro.     
+05/10   1                   Projetar            Escrito manual de peças.
+05/10   1                   Revisar codigo      Revisão do codigo do tabuleiro.c.
+05/10   1                   Revisar codigo      Rever descrições referente a tabuleiro.h

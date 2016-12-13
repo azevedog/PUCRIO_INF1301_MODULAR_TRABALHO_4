@@ -1,0 +1,5 @@
+Mude a extensão do "TRAB1-1" na pasta TRAB1-1 e do "TRAB1-2" na pasta TRAB1-2 de .txt para .exe.
+Para testar todos os módulos, clique duas vezes em TestaTudo.bat na pasta principal.
+Para testar os testes dos módulos separados, clique duas vezes em TestaTudo.bat dentro das respectivas pastas.
+Para testar somente o teste TesteLista.script, clique duas vezes em TestaLista.bat dentro das respectivas pastas.
+Os logs de saida serão criados nas respectivas pastas como "TesteLista.txt".

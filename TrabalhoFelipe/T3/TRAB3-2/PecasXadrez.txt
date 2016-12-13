@@ -1,0 +1,630 @@
+>>>>>>>>>>
+Nome p
+--Andar
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 2
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 1
+--FimAndar
+--Comer
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+<<<<<<<<<<
+>>>>>>>>>>
+Nome t
+--Andar
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 0
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Comer
+Oeste 0
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 0
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+<<<<<<<<<<
+>>>>>>>>>>
+Nome q
+--Andar
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 1
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 0
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Comer
+Oeste 0
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 0
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 1
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+<<<<<<<<<<
+>>>>>>>>>>
+Nome k
+--Andar
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 0
+Leste 0
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 1
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 0
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 0
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Comer
+Oeste 0
+Norte 0
+Leste 0
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 0
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 0
+Leste 0
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 1
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+<<<<<<<<<<
+>>>>>>>>>>
+Nome b
+--Andar
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 1
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimAndar
+--Comer
+Oeste 1
+Norte 0
+Leste 0
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 1
+Sul 1
+Max 8
+Min 1
+Primeiro 0
+--FimComer
+<<<<<<<<<<
+>>>>>>>>>>
+Nome c
+--Andar
+Oeste 0
+Norte 1
+Leste 2
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 2
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 2
+Norte 0
+Leste 0
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 2
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 2
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 2
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 1
+Norte 0
+Leste 0
+Sul 2
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 0
+Leste 1
+Sul 2
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Comer
+Oeste 0
+Norte 1
+Leste 2
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 2
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 2
+Norte 0
+Leste 0
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 2
+Sul 1
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 2
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 2
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 0
+Leste 0
+Sul 2
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 0
+Norte 0
+Leste 1
+Sul 2
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+<<<<<<<<<<

@@ -1,0 +1,17 @@
+Data	Horas Trabalhadas	Tipo Tarefa			Descrição da Tarefa Realizada
+24/09	1h					revisar código		Foi feita uma revisão no módulos lista e testlis
+24/09	1h					codificar 			Implementação de teste no modulo testlis
+24/09	1h					codificar			Implementação do script de teste para o modulo lista
+28/09	2h					revisar código		Alteração no módulo testlis e dos métodos do módulo lista
+29/09	1h					revisar código		Alteração no módulo lista
+01/10	1h					revisar código		Alteração nos módulos teslis e lista
+01/10	1h					revisar código		Complementando testes		
+01/10	1h					codificar			Iniciadas as implementações do tabuleiro	
+01/10	3h					codificar			Implementação da estrutura do tabuleiro
+01/10	1h					codificar			Implementação de função no modulo lista e teste
+01/10	1h					codificar			Implementação de funções no modulo tabuleiro
+02/10	1h					codificar			Implementação do esqueleto de todos os testes do módulo testtab		
+02/10	1h					codificar			Implementação de função auxiliar no modulo tabuleiro
+02/10	1h					codificar			Implementação de função auxiliar no modulo tabuleiro
+04/10	2h					codificar			Testes do modulo tabuleiro					
+05/10	1h					projetar			Criação do exemplo para o modelo fisico

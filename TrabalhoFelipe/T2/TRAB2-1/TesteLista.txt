@@ -1,0 +1,59 @@
+
+
+LES - Laboratório de Engenharia de Software DI/PUC-Rio
+      Arcabouço de teste de módulos C  (c) 2006
+
+---------------------------------------------
+      Construto sob teste: D:\Users\mdime\Documents\PUC\INF1301\T1\T2\TRAB2-1\TRAB2-1.exe
+
+      Arquivo de teste:    TesteLista.script
+
+
+!!!    0  Linha:     1  // Script:    TesteLista.script 
+!!!    0  Linha:     2  // Autor:     Arndt Von Staa, Pedro Ferreira, Felipe Pessoa, Matheus de Mello 
+!!!    0  Linha:     3  // Data:      08/set/2016 
+!!!    0  Linha:     4  // Propósito: Testar o módulo lista genérica duplamente encadeada 
+    6  == Inicializar valores
+   52  == Criar lista
+   55  == excluir no de lista vazia
+>>>    1  Linha:    56  A lista está vazia. Deveria ser: 0  É: 2
+<<<    0  Linha:    57  Falha esperada foi recuperada. 
+   59  == Obter indice de lista
+   62  == Obter indice de lista
+>>>    1  Linha:    63  Erro nos parâmetros do comando:  =obterIdLista       lista0   id9
+<<<    0  Linha:    64  Falha esperada foi recuperada. 
+   66  == Obter valor de no de lista vazia
+   69  == Ir para o próximo nó em lista vazia
+   72  == Ir para o nó anterior em lista vazia
+   75  == Alterar nó em lista vazia
+   78  == Destruir lista vazia
+   82  == Criar lista
+   85  == Obter indice de lista
+   88  == Inserir no na lista
+   92  == Ir para o próximo nó quando o corrente já é o último nó da lista
+   95  == Ir para o nó anterior quando o corrente já é o primeiro nó da lista
+   98  == Excluir No
+  101  == Inserir vários nós
+  111  == Ir para o nó anterior
+  114  == Ir para o próximo nó
+  117  == Ir para o inicio
+  121  == Alterar nó
+  125  == Excluir Nós
+  131  == Destruir lista cheia
+  144  == Criar listas com indice de 4 caracteres
+  149  == Obter indices de listas com 4 caracteres
+  154  == Destruir listas
+  159  == Criar lista com indice com mais de 4 caracteres
+>>>    1  Linha:   160  Erro nos parâmetros do comando:  =criarLista        lista3   id9    OK
+<<<    0  Linha:   161  Falha esperada foi recuperada. 
+!!!    0  Linha:   163  // fim 
+
+!!! Número de linhas lidas:         163
+!!! Número de casos de teste:        27
+!!! Número comandos corretos:        82
+!!! Número de falhas encontradas:     0
+
+!!! Não foram encontrados problemas
+
+
+!!! Numero de espacos ainda alocados: 0

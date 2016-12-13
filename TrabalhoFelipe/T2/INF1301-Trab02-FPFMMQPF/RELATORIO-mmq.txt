@@ -1,0 +1,7 @@
+Data    Horas Trabalhadas   Tipo Tarefa                Descrição da Tarefa Realizada
+21/09   1                   estudar                    Estudo do enunciado
+21/09   1                   projetar                   Definição da abordagem a ser utilizada na resolução do problema
+23/09   4                   revisar código do módulo   Adaptação do módulo Lista e seu respectivo teste
+28/09   2                   especificar os módulos     Criação do modelo tabuleiro
+02/10   4                   codificar                  Inicio da implementação dos testes do Módulo Tabuleiro
+04/10   8                   codificar                  Continuação da implementação dos testes do Módulo Tabuleiro

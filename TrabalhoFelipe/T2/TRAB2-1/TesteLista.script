@@ -1,0 +1,163 @@
+// Script:    TesteLista.script
+// Autor:     Arndt Von Staa, Pedro Ferreira, Felipe Pessoa, Matheus de Mello
+// Data:      08/set/2016
+// Propósito: Testar o módulo lista genérica duplamente encadeada
+
+== Inicializar valores
+=declararparm   lista0  int     0
+=declararparm   id0     string "0"
+
+=declararparm   lista1  int     1
+=declararparm   id1     string "1"
+
+=declararparm   lista2  int     2
+=declararparm   id2     string "22"
+
+=declararparm   lista3  int 3
+=declararparm   id3     string "333"
+
+=declararparm   lista4  int 4
+=declararparm   id4     string "4444"
+
+=declararparm   lista5  int 5
+=declararparm   id5     string "5555"
+
+=declararparm   lista6  int 6
+=declararparm   id6     string "6666"
+
+=declararparm   lista7  int 7
+=declararparm   id7     string "7777"
+
+=declararparm   lista8  int 8
+=declararparm   id8     string "8888"
+
+=declararparm   lista9  int 9
+=declararparm   id9     string "99999"
+
+=declararparm   char0   char   'a'
+=declararparm   char1   char   'b'
+=declararparm   char2   char   'c'
+=declararparm   char3   char   'd'
+=declararparm   char4   char   'e'
+
+=declararparm   OK             int  0
+=declararparm   NaoAchou       int  1
+=declararparm   ListaVazia     int  2
+=declararparm   ListaNaoExiste int  3
+=declararparm   FimLista       int  4
+=declararparm   OrigemLista    int  5
+=declararparm   FaltouMemoria  int  6
+
+
+== Criar lista
+=criarLista         lista0   id0     OK
+
+== excluir no de lista vazia
+=excluirNoCorrente  lista0
+=recuperar
+
+== Obter indice de lista
+=obterIdLista       lista0   id0
+
+== Obter indice de lista
+=obterIdLista       lista0   id9
+=recuperar
+
+== Obter valor de no de lista vazia
+=obterNo            lista0   char0   ListaVazia
+
+== Ir para o próximo nó em lista vazia
+=irProx             lista0           ListaVazia
+
+== Ir para o nó anterior em lista vazia
+=irAnt              lista0           ListaVazia
+
+== Alterar nó em lista vazia
+=alterarNoCorrente  lista0   char2   ListaVazia
+
+== Destruir lista vazia
+=destroiLista       lista0           OK  
+
+
+== Criar lista
+=criarLista         lista1   id1     OK
+
+== Obter indice de lista
+=obterIdLista       lista1   id1
+
+== Inserir no na lista
+=inserirNo          lista1   char1   OK
+=obterNo            lista1   char1   OK
+
+== Ir para o próximo nó quando o corrente já é o último nó da lista
+=irProx             lista1   FimLista
+
+== Ir para o nó anterior quando o corrente já é o primeiro nó da lista
+=irAnt              lista1   OrigemLista
+
+== Excluir No
+=excluirNoCorrente  lista1
+
+== Inserir vários nós
+=inserirNo          lista1   char1   OK
+=obterNo            lista1   char1   OK
+=inserirNo          lista1   char2   OK
+=obterNo            lista1   char2   OK
+=inserirNo          lista1   char3   OK
+=obterNo            lista1   char3   OK
+=inserirNo          lista1   char4   OK
+=obterNo            lista1   char4   OK
+
+== Ir para o nó anterior
+=irAnt				lista1	 OK
+
+== Ir para o próximo nó
+=irProx				lista1   OK
+
+== Ir para o inicio
+=andarInicio		lista1 	 OK
+=obterNo			lista1   char1   OK
+
+== Alterar nó
+=alterarNoCorrente  lista1   char2   OK
+=obterNo			lista1   char2   OK
+
+== Excluir Nós
+=excluirNoCorrente  lista1
+=excluirNoCorrente  lista1
+=excluirNoCorrente  lista1
+=excluirNoCorrente  lista1
+
+== Destruir lista cheia
+=inserirNo          lista1   char1   OK
+=obterNo            lista1   char1   OK
+=inserirNo          lista1   char2   OK
+=obterNo            lista1   char2   OK
+=inserirNo          lista1   char3   OK
+=obterNo            lista1   char3   OK
+=inserirNo          lista1   char4   OK
+=obterNo            lista1   char4   OK
+=destroiLista       lista1           OK
+
+
+
+== Criar listas com indice de 4 caracteres
+=criarLista        lista4   id4    OK
+=criarLista		   lista5	id5	   OK
+=criarLista		   lista6	id6	   OK
+
+== Obter indices de listas com 4 caracteres
+=obterIdLista      lista4   id4
+=obterIdLista      lista5   id5
+=obterIdLista      lista6   id6
+
+== Destruir listas
+=destroiLista      lista4         OK
+=destroiLista      lista5         OK
+=destroiLista      lista6         OK
+
+== Criar lista com indice com mais de 4 caracteres
+=criarLista        lista3   id9    OK
+=recuperar
+
+// fim

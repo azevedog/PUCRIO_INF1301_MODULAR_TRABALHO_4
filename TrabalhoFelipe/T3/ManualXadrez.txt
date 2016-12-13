@@ -1,0 +1,128 @@
+﻿----------------------------------------------------------------PEÇAS--------------------------------------------------------------------------------------
+
+Para a criação de uma nova peça de xadrez no arquivo "PecasXadrez.txt" é necessário seguir os seguintes critérios:
+- Cada nova peça deverá se encontrar dentro de um bloco que começe com ">>>>>>>>>>"(10 caracteres '>') e termina com "<<<<<<<<<<"(10 caracteres '<').
+
+- Seu arquivo não deve pular linhas como mostrado a seguir:
+>>>>>>>>>> |
+           |  
+Nome p     |  ERRADO
+...        |
+<<<<<<<<<< |
+
+>>>>>>>>>> |
+Nome p     |  CORRETO
+...        |
+<<<<<<<<<< |
+
+- após criado o bloco ele deverá conter em sua primeira linha o campo "Nome" que será seguido de um espaço em branco e depois o nome de sua peça, com até 4 caracteres.
+Ex: 
+>>>>>>>>>>
+Nome p
+...
+<<<<<<<<<<
+
+- o proximo campo a ser preenchido será o de andar, que poderá ter quantas diferentes formas de andar que você quiser, e segue a seguinte sintaxe: 
+ + Inicia o bloco com o nome "--Andar";
+ + É seguido pelos campos "Oeste", "Norte", "Leste" e "Sul", cada um em uma única linha seguidos de um espaço em branco e um número indicado o quanto essa peça anda naquele movimento naquela coordenada, seu movimento final será considerado como o resultado das coordenadas (um movimento na diagonal seria por exemplo Norte 1 e Leste 1, e um movimento do cavalo Norte 1 e Leste 2), não podendo superar 8 em uma única direção caso o seu tabuleiro seja 8x8;
+ + Em seguida devará possuir "Max" e "Min" seguindo o mesmo padrão do espaço e valor, eles representam o número mínimo e número máximo de vezes que aquele movimento poderá ser repetido em uma jogada;
+ + O ultimo campo é o "Primeiro" que será seguido de um '1' caso esse movimento seja possível apenas na primeira jogada da peça(ex: o Peão pode andar 2 casa na primeira jogada);
+ + Finaliza o bloco com "--FimAndar".
+ 
+Ex:
+>>>>>>>>>>
+...
+--Andar
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+...
+<<<<<<<<<<
+
+- em seguida vem o ultimo campo, o comer, que seguira o mesmo padrão e sintaxe de andar, porém "--Andar" será substituido por "--Comer" e "--FimAndar" por "--FimComer".
+Ex:
+>>>>>>>>>>
+...
+--Comer
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+...
+<<<<<<<<<<
+
+OBS: É necessário para um jogo de xadrez uma peça "rei" com o nome k para ambos os jogadores.
+
+Segue abaixo o exemplo da criação da peça do Peão:
+
+>>>>>>>>>>
+Nome p
+--Andar
+Oeste 0
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimAndar
+--Andar
+Oeste 0
+Norte 2
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 1
+--FimAndar
+--Comer
+Oeste 0
+Norte 1
+Leste 1
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+--Comer
+Oeste 1
+Norte 1
+Leste 0
+Sul 0
+Max 1
+Min 1
+Primeiro 0
+--FimComer
+<<<<<<<<<<
+
+----------------------------------------------------------------TABULEIRO--------------------------------------------------------------------------------------
+
+Para inserir uma nova peça ao tabuleiro e necessário seguir os seguintes passos:
+
+- No arquivo "PecasTabuleiro.txt"
+- Inicia um novo bloco para a peça com >>>>>>>>>>"(10 caracteres '>').
+- Na primeira linha após o inicio do bloco é colocado o nome da peça a ser inserida, sendo esta existente no arquivo de peças.
+- Na segunda linha a cor da da peça podendo ser "b" ou "p".
+- Na terceira uma letra entre "A" e "H" indicando a coluna onde ela se encontra.
+- Na quarta um numero entre "1" e "8" indicando a linha onde ela se encontra.
+- Por fim se finaliza o bloco com "<<<<<<<<<<"(10 caracteres '<').
+
+Segue abaixo o exemplo da inserção da peça Peão:
+
+>>>>>>>>>>
+p
+b
+H
+2
+<<<<<<<<<<
+
+No caso acima o Peão da cor branca foi inserido na casa "H2".

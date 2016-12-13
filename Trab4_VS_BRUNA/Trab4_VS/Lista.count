@@ -1,0 +1,33 @@
+//////////////////////////////////////////////////////////////////////
+// Contadores acumulados, gerado: 2016/12/11-13:39:32
+//////////////////////////////////////////////////////////////////////
+
+LIS-verificar-estrutura-lista-existe
+LIS-verificar-estrutura-lista-vazia
+LIS-verificar-estrutura-lista-vazia-origem-fim-corrente-nulo
+LIS-verificar-estrutura-lista-vazia-origem-fim-corrente-nao-nulo
+LIS-verificar-estrutura-lista-vazia-tam-diferente-0
+LIS-verificar-estrutura-elem-corrente-nulo-lista-populada
+LIS-verificar-estrutura-unico-elemento
+LIS-verificar-estrutura-lista-unico-elemento-corrente-igual-fim-igual-inicio
+LIS-verificar-estrutura-lista-unico-elemento-corrente-diferente-fim-igual-inicio
+LIS-verificar-estrutura-corrente-diferente-origem
+LIS-verificar-estrutura-anterior-corrente-nao-nulo
+LIS-verificar-estrutura-prox-anterior-diferente-corrente
+LIS-verificar-estrutura-anterior-corrente-nulo
+LIS-verificar-estrutura-corrente-diferente-fim
+LIS-verificar-estrutura-proximo-corrente-nao-nulo
+LIS-verificar-estrutura-anterior-prox-diferente-corrente
+LIS-verificar-estrutura-proximo-corrente-nulo
+LIS-verificar-estrutura-while
+LIS-verificar-estrutura-tam-valor-diferente
+LIS-verificar-estrutura-id-no-nao-compativel
+LIS-verificar-estrutura-id-no-diferente-lista
+LIS-verificar-estrutura-cabeca-no-diferente-cabeca-lista
+LIS-verificar-estrutura-tam-lista-errado
+LIS-verificar-estrutura-tam-valores-errado
+LIS-verificar-estrutura-lista-inexistente-espaco-ativo
+
+//////////////////////////////////////////////////////////////////////
+// Fim arquivo de contadores acumulados
+//////////////////////////////////////////////////////////////////////

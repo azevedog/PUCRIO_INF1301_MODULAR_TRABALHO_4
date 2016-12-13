@@ -1,0 +1,149 @@
+// Script:    TesteJogo.script
+// Autor:     Pedro Ferreira, Felipe Pessoa, Matheus de Mello
+// Data:      02/nov/2016
+// Propósito: Testar o módulo jogo de xadrez
+
+== Inicializar valores
+=declararparm   OK   			   int  0
+=declararparm   FaltouMemoria      int  1
+=declararparm   TabNaoExiste       int  2
+=declararparm   ArqPecasNaoExiste  int  3
+=declararparm   ArqPecasForaPadrao int  4
+=declararparm   JogoParado	       int  5
+=declararparm   JogoEmAndamento    int  6
+=declararparm   MovimentoInvalido  int  7
+=declararparm   JogoNaoPodeIniciar int  8
+=declararparm   Cheque 		       int  9
+=declararparm   ChequeMate  	   int  10
+=declararparm   NaoExisteRei 	   int  11
+
+=declararparm   jog1   string  "player1"
+=declararparm   jog2   string  "player2"
+
+=declararparm	arq1	string	"PecasTabuleiro.txt"
+=declararparm	arq2	string	"PecasTabuleiroErrado.txt"
+=declararparm	arq3	string	"PecasTabuleiroNaoExiste.txt"
+=declararparm	arq4	string	"PecasTabuleiroNaoRei.txt"
+
+== Montar tabuleiro - Arquivo nao existe
+=montaTab	arq3	ArqPecasNaoExiste
+
+== Montar tabuleiro - Fora do padrao
+=montaTab	arq2	ArqPecasForaPadrao
+
+== Montar tabuleiro - OK
+=montaTab arq4	OK
+
+== Recebe jogadores - OK
+=recJogador	jog1	jog2	OK
+
+== Inicia jogo - OK
+=iniciaJogo	OK
+
+== Cheque Mate - Nao existe rei
+=chequeMate	jog1 NaoExisteRei
+=chequeMate	jog2 NaoExisteRei
+
+== Recebe jogada - FIM
+=recJogada	"FIM"	"FIM"	OK
+
+== Montar tabuleiro - OK
+=montaTab	arq1	OK
+
+== Mostrar tabuleiro - Jogo parado
+=mostraTab	JogoParado
+
+== Cheque Mate - Jogo parado
+=chequeMate	jog1 JogoParado
+=chequeMate	jog2 JogoParado
+
+== Recebe jogadores - OK
+=recJogador	jog1	jog2	OK
+
+== Recebe jogada - Jogo Parado
+=recJogada	"A2"	"A4"	JogoParado
+
+== Inicia jogo - OK
+=iniciaJogo	OK
+
+== Inicia jogo - Jogo em andamento
+=iniciaJogo	JogoEmAndamento
+
+== Recebe jogadores - Jogo em andamento
+=recJogador	jog1	jog2	JogoEmAndamento
+
+== Montar tabuleiro - Jogo em andamento
+=montaTab	arq1	JogoEmAndamento
+
+== Mostrar tabuleiro - OK
+=mostraTab	OK
+
+== Recebe jogada - OK
+=recJogada	"E2"	"E4"	OK
+
+== Cheque Mate - OK
+=chequeMate	jog1 OK
+=chequeMate	jog2 OK
+
+== Recebe jogada - Movimento inválido
+=recJogada	"A2"	"E4"	MovimentoInvalido
+
+== Mostrar tabuleiro - OK
+=mostraTab	OK
+
+== Recebe jogada - OK
+=recJogada	"A7"	"A6"	OK
+
+== Cheque Mate - OK
+=chequeMate	jog1 OK
+=chequeMate	jog2 OK
+
+== Mostrar tabuleiro - OK
+=mostraTab	OK
+
+== Recebe jogada - OK
+=recJogada	"F1"	"C4"	OK
+
+== Cheque Mate - OK
+=chequeMate	jog1 OK
+=chequeMate	jog2 OK
+
+== Mostrar tabuleiro - OK
+=mostraTab	OK
+
+== Recebe jogada - OK
+=recJogada	"A6"	"A5"	OK
+
+== Cheque Mate - OK
+=chequeMate	jog1 OK
+=chequeMate	jog2 OK
+
+== Mostrar tabuleiro - OK
+=mostraTab	OK
+
+== Recebe jogada - OK
+=recJogada	"G1"	"H3"	OK
+
+== Cheque Mate - OK
+=chequeMate	jog1 OK
+=chequeMate	jog2 OK
+
+== Mostrar tabuleiro - OK
+=mostraTab	OK
+
+== Recebe jogada
+=recJogada	"F7"	"F5"	OK
+
+== Cheque Mate - OK
+=chequeMate	jog1 OK
+=chequeMate	jog2 OK
+
+== Recebe jogada
+=recJogada	"D1"	"H5"	OK
+
+== Mostrar tabuleiro - OK
+=mostraTab	OK
+
+== Cheque Mate - Cheque Mate
+=chequeMate	jog1 OK
+=chequeMate	jog2 ChequeMate

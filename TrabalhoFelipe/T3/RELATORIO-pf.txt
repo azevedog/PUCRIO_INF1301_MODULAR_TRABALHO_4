@@ -1,0 +1,15 @@
+Data	Horas Trabalhadas	Tipo Tarefa			Descrição da Tarefa Realizada
+21/10	1h					codificar			Início da implementação dos módulos jogo
+28/10	2h					codificar			Implementação de funçoes do modulo jogo
+01/11	1h					codificar			Implementação de funçoes do modulo jogo
+02/11	2h					revisar código		Revisão de código para consertar bug
+02/11	1h					codificar			Implementação de função no modulo jogo
+03/11	1h					codificar			Implementação de teste
+04/11	2h					codificar			Implementação de função no modulo jogo
+06/11	1h					codificar			Implementação de função no modulo jogo
+06/11	1h					codificar			Implementação de testes
+06/11	1h					revisar codigo		Revisando algumuas dunções
+08/11	1h					codificar			Implementando testes
+12/11	1h					codificar			Implementação de funçoes do modulo jogo
+13/11	1h					revisar	código		Consertando bug
+14/11   2h                  Projetar            Escrito manuais

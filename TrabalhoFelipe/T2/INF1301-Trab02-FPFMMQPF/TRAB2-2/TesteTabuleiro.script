@@ -1,0 +1,132 @@
+// Script:    TesteTabuleiro.script
+// Autor:     Pedro Ferreira, Felipe Pessoa, Matheus de Mello
+// Data:      08/set/2016
+// Propósito: Testar o módulo tabuleiro de xadrez
+
+== Inicializar valores
+=declararparm   tab0  int  0
+=declararparm   tab1  int  1
+
+
+=declararparm   preto   char  'p'
+=declararparm   branco  char  'b'
+=declararparm   errc    char  'e'
+
+
+=declararparm   peao   string  "p"
+=declararparm   torre  string  "t"
+=declararparm   errp   string  "err"
+
+
+=declararparm   OK                 int  0
+=declararparm   EntradaInvalida    int  1
+=declararparm   TabNaoExiste       int  2
+=declararparm   FaltouMemoria      int  3
+=declararparm   CasaNaoExiste      int  4
+=declararparm   PecaNaoExiste      int  5
+=declararparm   CorNaoExiste       int  6
+=declararparm   MovimentoInvalido  int  7
+=declararparm   CasaVazia          int  8
+
+
+
+== Criar tabuleiro
+=criarTab     tab0  OK
+
+== Inserir peca de tipo inexistente
+=inserirPeca  tab0  errp  preto  "H8"  PecaNaoExiste
+=inserirPeca  tab0  errp  preto  "H8"  OK
+=recuperar
+
+== Inserir peca de cor inexistente
+=inserirPeca  tab0  peao  errc   "H8"  CorNaoExiste
+=inserirPeca  tab0  peao  errc   "H8"  OK
+=recuperar
+
+== Inserir peca em casa inexistente
+=inserirPeca  tab0  peao  preto  "H9"  CasaNaoExiste
+=inserirPeca  tab0  peao  preto  "H9"  OK
+=recuperar
+
+== Inserir peca
+=inserirPeca  tab0  peao  preto   "H8"  OK
+=obterPeca    tab0  "H8"  preto   peao  OK
+
+== Obter peca - cor esperada diferente da existente
+=obterPeca    tab0  "H8"  branco  peao   OK
+=recuperar
+
+== Obter peca - tipo esperado diferente do existente
+=obterPeca    tab0  "H8"  preto   torre  OK
+=recuperar
+
+== Obter peca - casa inexistente
+=obterPeca    tab0  "H0"  branco  torre  CasaNaoExiste
+
+== Obter peca - casa vazia
+=obterPeca    tab0  "H7"  branco  torre  CasaVazia
+
+== Retirar peca - casa inexistente
+=retirarPeca   tab0   "J8"   CasaNaoExiste
+
+==Retirar peca
+=retirarPeca   tab0   "H8"   OK
+
+==Obter Lista Ameacados
+=obterLisAmdo   tab0   "A7"   OK
+
+==Obter Lista Ameacados - casa inexistente
+=obterLisAmdo   tab0   "R7"   CasaNaoExiste
+
+==Obter Lista Ameacantes
+=obterLisAmte   tab0   "A7"   OK
+
+==Obter Lista Ameacantes - casa inexistente
+=obterLisAmte   tab0   "R7"   CasaNaoExiste
+
+==Obter Lista Ameacantes - casa inexistente
+=obterLisAmte   tab0   "R7"   OK
+=recuperar
+
+== Destruir tabuleiro
+=destruirTab  tab0  OK
+
+== Criar tabuleiro
+=criarTab      tab1  OK
+
+== Inserir diversas peças
+=inserirPeca  tab1  torre  preto  "H1"   OK
+=obterPeca    tab1  "H1"   preto  torre  OK
+=inserirPeca  tab1  torre  preto  "H8"   OK
+=obterPeca    tab1  "H8"   preto  torre  OK
+=inserirPeca  tab1  peao   preto  "G1"   OK
+=obterPeca    tab1  "G1"   preto  peao   OK
+=inserirPeca  tab1  peao   preto  "G2"   OK
+=obterPeca    tab1  "G2"   preto  peao   OK
+
+== Mover Peca - Destino: peça de mesma cor
+=moverPeca    tab1  "H1"   "G1"          MovimentoInvalido
+=obterPeca    tab1  "H1"   preto  torre  OK
+
+== Mover Peca - Destino: através de peça da mesma cor
+=moverPeca    tab1  "H1"   "A1"          MovimentoInvalido
+=obterPeca    tab1  "H1"   preto  torre  OK
+
+== Mover Peca - Destino: Mesma Casa
+=moverPeca    tab1  "H1"   "H1"   MovimentoInvalido
+=obterPeca    tab1  "H1"   preto  torre  OK
+
+== Mover Peca - Destino: Movimento Mínimo
+=moverPeca    tab1  "H1"   "H2"          OK
+=obterPeca    tab1  "H2"   preto  torre  OK
+
+== Mover Peca - Destino: Movimento Intermediário
+=moverPeca    tab1  "H8"   "H4"          OK
+=obterPeca    tab1  "H4"   preto  torre  OK
+
+== Mover Peca - Primeiro Movimento
+=moverPeca    tab1  "G1"   "E1"          OK
+=obterPeca    tab1  "E1"   preto  peao   OK
+
+== Destruir tabuleiro
+=destruirTab  tab1  OK

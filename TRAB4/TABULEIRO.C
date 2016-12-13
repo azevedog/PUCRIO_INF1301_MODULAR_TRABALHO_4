@@ -1,388 +1,1133 @@
 /***************************************************************************
-*  $MCI Módulo de implementação: TAB  Tabuleiro para jogo generico 
+*  $MCI Módulo de implementação: TAB  Tabuleiro do Xadrez
 *
 *  Arquivo gerado:              TABULEIRO.c
 *  Letras identificadoras:      TAB
 *
-*  Nome da base de software:    OpenJogos
+*  Nome da base de software:    Arcabouço para a automação de testes de programas redigidos em C
 *
-*  Projeto: MODULAR_T2
-*  Gestor:  EAMCEMP LTDA
-*  Autores: MCS e GBHA
+*  Projeto: INF 1301 / Juiz de Xadrez
+*  -------------------------------------------Gestor:  LES/DI/PUC-Rio
+*  Autores: pf - Pedro Ferreira
+*           mmq - Matheus de Mello Queiroz
+*			fpf - Felipe Pessoa de Freitas	
 *
 *  $HA Histórico de evolução:
-*     Versão  Autor    Data     Observações
-* 		5		gbha		14/nov/2016 Conlusao desenvolvimento T3
-*	   4       gbha  13/Nov/2016 Ajustes para o T3
-*	   3       gbha  4/out/2016 Conclusao desenvolvimento
-*	   2       gbha  3/out/2016 Continuacao desenvolvimento
-*      1       mcs   1/out/2016 início desenvolvimento
+*     Versão  Autor     Data       Observações
+*     6       mmq    05/out/2016  revisao modulo e correções
+*     5       mmq    04/out/2016  correcao de bugs
+*     4       fpf    02/out/2016  desenvolvimento de funções
+*     3       pf     02/out/2016  desenvolvimento de funções
+*     2       fpf	 01/out/2016  implementação da estrutura do tabuleiro e funções
+*     1       pf     25/set/2016  início da implementação das peças
 *
 ***************************************************************************/
 
-#ifdef _DEBUG
-	#include "cespdin.h"
-#endif
-
+#include   <stdlib.h>
 #include   <stdio.h>
 #include   <string.h>
 #include   <memory.h>
 #include   <malloc.h>
 #include   <assert.h>
-#include	"TABULEIRO.h"
-#include	"LISTA.h"
-#include	"PECA.h"
+
+#include "TABULEIRO.H"
+
+#define TABULEIRO_OWN
+#include "TABULEIRO.h"
+#undef TABULEIRO_OWN
+
+#define pathArquivo "PecasXadrez.txt"
+
+#define FALSE 0
+#define TRUE  1
+
+#define COR_CASA_VAZIA  'u'
+#define PECA_CASA_VAZIA "xxx"
+
 
 /***********************************************************************
 *
-*  $TC Tipo de dados: TAB Descritor do tabuleiro
+*  $TC Tipo de dados: TAB Descritor da cabeça do Tabuleiro
 *
 *
 ***********************************************************************/
 
-   typedef struct TAB_tagTabuleiro {
-   
-		/*PEC_tppPeca criadas[26];
-				/*Vetor de pecas "definidas" prontas para serem inseridas no tabuleiro",
-				 * bastando definir o seu time ao inserir. A limitacao de 26 pecas se deve
-				 * ao uso de letras como identificadores de cada tipo de peca. Só pode haver
-				 * um tipo por letra a distancia do valor ASCII de 'A' serve como index do vetor.
-				 */
+typedef struct TAB_tagTabuleiro
+{
+	LIS_tppLista pPecas;
+		   /* Cabeça da lista com as peças disponiveis */
 
-        PEC_tppPeca** posicoes;
-               /* Matriz de posicoes do tabuleiro*/
-			   
-		int linhas;
-				/* Numero de linhas no tabuleiro. */
-				
-		int colunas;
-				/* Numero de colunas no tabuleiro. */
-			   
-   } TAB_tpTabuleiro ;
+	LIS_tppLista pMatriz;
+		   /* Cabeça da matriz */
 
-/***** Protótipos das funções encapuladas no módulo *****/
+	#ifdef _DEBUG
+		char tipoTabuleiro;
+		char quantidadeNos;
+	#endif
+
+} TAB_tpTabuleiro;
+
+
+/***********************************************************************
+*
+*  $TC Tipo de dados: TAB Conteudo da lista de peças
+*
+*
+***********************************************************************/
+
+typedef struct tagPeca{
 	
-	static TAB_tpCondRet posicaoInvalida(int x, int y, TAB_tppTabuleiro tabuleiro);
-		/* Verifica se uma posicao esta dentro dos limites do tabuleiro.*/
-		
-	static void ExcluirValor ( void * pDado ) ;
-		/*Funcao para remocao de elemento das listas de ameacados e ameacantes. */
+	char nome[4];
+			/* Nome da peça */
+
+	LIS_tppLista pAndar;
+			/* Ponteiro da Lista contendo os movimentos da peça de andar */
+
+	LIS_tppLista pComer;
+			/* Ponteiro da Lista contendo os movimentos da peça de comer */
+
+} tpPeca;
+
+/***********************************************************************
+*
+*  $TC Tipo de dados: TAB Conteudo da lista de movimentos da pecas
+*
+*
+***********************************************************************/
+
+typedef struct tagMovimentoPeca{
+
+	int coordenadas[4];
+		/* Vetor de inteiros que representa as coordenadas Oeste = 0, 
+		Norte = 1, Leste =2 e Sul = 3 */
+
+	int max;
+		/* Numero maximo de vezes que esse movimento pode ser repetido em uma jogada */
+
+	int min;
+		/* Numero minimo de vezes que esse movimento pode ser repetido em uma jogada */
+
+	int primeiroMov;
+		/* Movimento que so pode ser executado na primeira jogada daquela peça */
+
+} tpMovimentoPeca;
+
+/***********************************************************************
+*
+*  $TC Tipo de dados: TAB Conteudo da lista de casas
+*
+*
+***********************************************************************/
+
+typedef struct tagCasa{
+
+	#ifdef _DEBUG
+		char tipoCasa;
+	#endif
+
+	char nome[4];
+			/* Nome da peça na casa */
+
+	char cor;
+			/* Cor da peça na casa */
+
+	int primeiroMov;
+			/* Movimento que so pode ser executado na primeira jogada daquela peça */
+
+	LIS_tppLista pAmeacantes;
+			/* Ponteiro da Lista contendo as casas que contém peças que legalmente ameaçam a presente casa */
+
+	LIS_tppLista pAmeacados;
+			/* Ponteiro da Lista contendo as casas legalmente ameaçadas pela peça na presente casa */
+
+} tpCasa;
+
+/***** Protótipos das funções encapsuladas no módulo *****/
+
+static void DestruirValorPeca(void * pValor);
+
+static void DestruirValorGenerico(void * pValor);
+
+static void DestruirValorMatriz(void * pValor); 
+
+static void DestruirValorCasa(void * pValor);
+
+static TAB_tpCondRet CriarCasa( tpCasa ** pCasa );
+
+static TAB_tpCondRet CriarPeca( tpPeca ** Peca );
+
+static TAB_tpCondRet LerArquivoPecas( LIS_tppLista * pListaPecas );
+
+static int ValidarTipoPeca(LIS_tppLista pLista, char * nome);
+
+static int ValidarCorPeca( char cor );
+
+static int ValidarCoordenada( char * pCoordenada );
+
+static tpCasa * ObterCasa(LIS_tppLista pLista, char * pCoordenada);
+
+static int ValidarMovimento(TAB_tppTabuleiro pTabuleiro, char * origem, char * destino, int atualizarLista);
+
+static void AtualizaListas(TAB_tppTabuleiro pTabuleiro );
 
 /*****  Código das funções exportadas pelo módulo  *****/
 
 /***************************************************************************
 *
-*  Função: TAB  &Criar Tabuleiro
+*  Função: TAB  &Criar tabuleiro
 *  ****/
-TAB_tpCondRet TAB_CriarTabuleiro(int numColunas, int numLinhas,
-		TAB_tppTabuleiro* novoTabuleiro){
-		
-	int lin, col;
-	
-	(*novoTabuleiro) =  (TAB_tppTabuleiro) malloc(sizeof(TAB_tpTabuleiro));
-	if ((*novoTabuleiro) == NULL ){
-      return TAB_CondRetErro ;
-    } /* if */
-	
-	(*novoTabuleiro)->posicoes = (PEC_tppPeca**)
-	malloc(sizeof(PEC_tppPeca*)*numLinhas);
-	
-	for(lin =0; lin < numLinhas; lin++){
-		(*novoTabuleiro)->posicoes[lin] = 
-			 (PEC_tppPeca*) malloc(sizeof(PEC_tppPeca)*numColunas); 
-		for(col = 0; col < numColunas; col++){
-			(*novoTabuleiro)->posicoes[lin][col] = NULL;
-		}
-	}	
-	
-	(*novoTabuleiro)->linhas = numLinhas;
-	(*novoTabuleiro)->colunas = numColunas;
-	
-	return TAB_CondRetOK;
-	}/* Fim função: TAB  &Criar Tabuleiro */
 
+TAB_tpCondRet TAB_CriarTabuleiro(TAB_tppTabuleiro * pTabuleiro)
+{
+   int i, j;
 
-/***************************************************************************
-*
-*  Função: TAB  &Inserir peca no tabuleiro
-*  ****/
- TAB_tpCondRet TAB_InserirPeca(int linha, int coluna,  char identificador, char corTime, 
-		char* pathMovimento, TAB_tppTabuleiro tabuleiro){
-		
-		PEC_tppPeca pPeca;
-		
-		if(posicaoInvalida(linha, coluna, tabuleiro) ){
-			return TAB_CondRetForaTabuleiro;
-		}
+   TAB_tppTabuleiro pTabuleiroTemp;
+   TAB_tpCondRet    CondRetTab;
+   LIS_tpCondRet    CondRetLis;
 
-		pPeca = tabuleiro->posicoes[linha][coluna];		
-		
-		if(pPeca != NULL){
-			return TAB_CondRetErro;
-		}
-		
-		if(PEC_CriarPeca(&pPeca, identificador, corTime,
-		 pathMovimento)!= PEC_CondRetOK) {
-			return TAB_CondRetErro;
-		}
-		
-		tabuleiro->posicoes[linha][coluna] = pPeca;
+   /* Cria o tabuleiro */
+   pTabuleiroTemp = ( TAB_tpTabuleiro * ) malloc( sizeof( TAB_tpTabuleiro ) );
+   if ( pTabuleiroTemp == NULL )
+   {
+	   return TAB_CondRetFaltouMemoria;
+   } /* if */
 
-		return TAB_CondRetOK;
-	}/* Fim função: TAB  &Inserir peca no tabuleiro */
-
-  
-
-/***************************************************************************
-*
-*  Função: TAB  &Mover peca no tabuleiro
-*  ****/
-  TAB_tpCondRet TAB_MoverPeca(int linhaInicial, int colunaInicial, int linhaFinal, int colunaFinal,
-  TAB_tppTabuleiro tabuleiro){
-		
-		TAB_tpCondRet ret;
-		PEC_tppPeca pPecaOrigem;
-		PEC_tppPeca pPecaDestino;
-		
-		if(posicaoInvalida(linhaFinal, colunaFinal, tabuleiro)){
-			return TAB_CondRetForaTabuleiro;
-		}
-		
-		pPecaOrigem = tabuleiro->posicoes[linhaInicial][colunaInicial];
-		
-		if(pPecaOrigem == NULL){
-			return TAB_CondRetPosicaoVazia;
-		}
-
-		if(PEC_Mover(pPecaOrigem, colunaInicial, linhaInicial, colunaFinal, linhaFinal)!=PEC_CondRetOK){
-			return TAB_CondRetElementoNaoFaz;
-		}
-		
-		pPecaDestino = tabuleiro->posicoes[linhaFinal][colunaFinal];
-		
-		if(pPecaDestino != NULL){
-			if(PEC_ComparaPeca(pPecaOrigem, pPecaDestino) == PEC_CondRetMesmoTime){
-				return TAB_CondRetElementoMesmoTime;
-			}
-			else{
-				if(TAB_RetirarPeca(linhaFinal, colunaFinal, tabuleiro)!=PEC_CondRetOK){
-					return TAB_CondRetErro;
-				}
-				ret = TAB_CondRetSubstituiuOutroElemento;
-			}
-		}
-		else{
-			ret = TAB_CondRetOK;
-		}
-				
-		tabuleiro->posicoes[linhaFinal][colunaFinal] = pPecaOrigem;
-		tabuleiro->posicoes[linhaInicial][colunaInicial] = NULL;
-
-		return ret;
-	}/* Fim função: TAB  &Mover peca no tabuleiro */
-
+   /* Preenche a lista com os tipos de peça existentes */
+   CondRetTab = LerArquivoPecas( &pTabuleiroTemp->pPecas );
+   if( CondRetTab != TAB_CondRetOK )
+   {
+	   return CondRetTab;
+   } /* if */
    
+   /* Cria a matriz do tabuleiro */
+   CondRetLis = LIS_CriarLista( "matx", DestruirValorMatriz, &pTabuleiroTemp->pMatriz );
+   if ( CondRetLis != LIS_CondRetOK )
+   {
+	   return TAB_CondRetFaltouMemoria;
+   } /* if */
+
+   #ifdef _DEBUG
+	   &pTabuleiroTemp->tipo = "t";
+	   &pTabuleiroTemp->quantidadeNos = 0;
+   #endif
+
+   for ( i = 0; i < 8; i++ )
+   {
+	   LIS_tppLista pListaColunasTemp;
+
+	   char id = ( i + '0' );
+
+	   /* Cria as colunas da matriz */
+	   CondRetLis = LIS_CriarLista( &id, DestruirValorCasa, &pListaColunasTemp );
+	   if ( CondRetLis != TAB_CondRetOK )
+	   {
+		   return TAB_CondRetFaltouMemoria;
+	   } /* if */
+
+	   for ( j = 0; j < 8; j++ )
+	   {
+		   /* Inseres os elementos na coluna da matriz */
+		   tpCasa * pCasa;
+
+		   CondRetTab = CriarCasa( &pCasa );
+		   if( CondRetTab != TAB_CondRetOK )
+		   {
+			   return TAB_CondRetFaltouMemoria;
+		   }
+
+		   CondRetLis = LIS_InserirElemento( pListaColunasTemp, pCasa );
+		   if ( CondRetLis != TAB_CondRetOK )
+		   {
+			   return TAB_CondRetFaltouMemoria;
+		   } /* if */
+
+			#ifdef _DEBUG
+				&pTabuleiroTemp->quantidadeNos += 1;
+			#endif
+	   }
+
+	   /* Insere as colunas na matriz */
+	   CondRetLis = LIS_InserirElemento( pTabuleiroTemp->pMatriz, pListaColunasTemp );
+	   if ( CondRetLis != TAB_CondRetOK )
+	   {
+		   return TAB_CondRetFaltouMemoria;
+	   } /* if */
+   }
+
+   *pTabuleiro = pTabuleiroTemp;
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Criar tabuleiro */
+
+
 /***************************************************************************
 *
-*  Função: TAB  &Retirar peca do tabuleiro
+*  Função: TAB  &Inserir peca
 *  ****/
- TAB_tpCondRet TAB_RetirarPeca(int linhaInicial, int colunaInicial, TAB_tppTabuleiro tabuleiro){
-		PEC_tppPeca pPecaOrigem;
-		
-		if(posicaoInvalida(linhaInicial, colunaInicial, tabuleiro)){
-			return TAB_CondRetForaTabuleiro;
-		}
-		
-		if(tabuleiro->posicoes[linhaInicial][colunaInicial] == NULL){
-			return TAB_CondRetPosicaoVazia;
-		}
-		
-		pPecaOrigem = tabuleiro->posicoes[linhaInicial][colunaInicial];
-		
-		PEC_LiberarPeca(pPecaOrigem);
-		tabuleiro->posicoes[linhaInicial][colunaInicial] = NULL;
-				
-		return TAB_CondRetOK;
-	}/* Fim função: TAB  &Retirar peca do tabuleiro */
+
+TAB_tpCondRet TAB_InserirPeca(TAB_tppTabuleiro * pTabuleiro, char * pNome, char cor, char * pCoordenada)
+{
+   TAB_tppTabuleiro pTabTemp;
+
+   tpCasa * pCasa;
+
+   if ( pTabuleiro == NULL )
+   {
+	   return TAB_CondRetNaoExiste;
+   } /* if */
    
+   pTabTemp = *pTabuleiro;
+
+   if ( ! ValidarTipoPeca( pTabTemp->pPecas, pNome ) )
+   {
+	   return TAB_CondRetPecaInexistente;
+   } /* if */
+
+   if ( ! ValidarCorPeca( cor ) )
+   {
+	   return TAB_CondRetCorInexistente;
+   } /* if */
+
+   if ( ! ValidarCoordenada( pCoordenada ) )
+   {
+	   return TAB_CondRetCasaInexistente;
+   } /* if */
+	
+   pCasa = ObterCasa( pTabTemp->pMatriz, pCoordenada );
+   pCasa->cor = cor;
+   strcpy( pCasa->nome, pNome );
+   pCasa->primeiroMov = 1;
+
+	AtualizaListas( pTabTemp );
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Inserir peca */
 
 /***************************************************************************
 *
-*  Função: TAB  &Obter peca do tabuleiro
+*  Função: TAB  &Mover peca
 *  ****/
- TAB_tpCondRet TAB_ObterPeca(int linhaInicial, int colunaInicial, char** id,
-	TAB_tppTabuleiro tabuleiro){
-	
-		PEC_tppPeca pPeca;
-		
-		if(posicaoInvalida(linhaInicial, colunaInicial, tabuleiro)){
-			return TAB_CondRetForaTabuleiro;
-		}
-		
-		if(tabuleiro->posicoes[linhaInicial][colunaInicial] == NULL){
-			return TAB_CondRetPosicaoVazia;
-		}
-		
-		pPeca = tabuleiro->posicoes[linhaInicial][colunaInicial];
-		
-		if(PEC_ObterIdentificadorPeca(pPeca, id) != PEC_CondRetOK){
-				return TAB_CondRetErro;
-		}
-		return TAB_CondRetOK;
-	}/* Fim função: TAB  &Obter peca do tabuleiro */
-	
+
+TAB_tpCondRet TAB_MoverPeca(TAB_tppTabuleiro * pTabuleiro, char * origem, char * destino)
+{
+   tpCasa * pCasaOrigem;
+   tpCasa * pCasaDestino;
+
+   TAB_tppTabuleiro pTabTemp;
+
+   if (pTabuleiro == NULL)
+   {
+	   return TAB_CondRetNaoExiste;
+   } /* if */
+
+   pTabTemp = *pTabuleiro;
+
+   if ( ! ValidarCoordenada( origem ) || ! ValidarCoordenada( destino ) )
+   {
+	   return TAB_CondRetCasaInexistente;
+   }
+
+   pCasaDestino = ObterCasa(pTabTemp->pMatriz, destino);
+   pCasaOrigem = ObterCasa(pTabTemp->pMatriz, origem);
+   if( pCasaOrigem->cor == COR_CASA_VAZIA )
+   {
+	   return TAB_CondRetCasaVazia;
+   }
+
+   if ( ! ValidarMovimento( pTabTemp, origem, destino, FALSE ) )
+   {
+	   return TAB_CondRetMovimentoInvalido;
+   }
+
+   pCasaDestino->cor = pCasaOrigem->cor;
+   strcpy( pCasaDestino->nome, pCasaOrigem->nome);
+
+   pCasaOrigem->cor = COR_CASA_VAZIA;
+   strcpy( pCasaOrigem->nome, PECA_CASA_VAZIA );
+
+   pCasaOrigem->primeiroMov  = 0;
+   pCasaDestino->primeiroMov = 0;
+   	
+   AtualizaListas( pTabTemp );
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Mover peca */
+
 
 /***************************************************************************
 *
-*  Função: TAB  &Obter ameacantes
+*  Função: TAB  &Retirar peca
 *  ****/
- TAB_tpCondRet TAB_ObterListaAmeacantes(int linhaInicial, int colunaInicial, LIS_tppLista* lista,
-	TAB_tppTabuleiro tabuleiro){
-		
-		char* ameacanteId;
-		int x, y;
-		char* idLista= "T";
-		PEC_tppPeca pPecaOrigem;
-		PEC_tppPeca pPecaDestino;
-				
-		if(posicaoInvalida(linhaInicial, colunaInicial, tabuleiro)){
-			return TAB_CondRetForaTabuleiro;
-		}
 
-		pPecaDestino = tabuleiro->posicoes[linhaInicial][colunaInicial];
-		
-		if(pPecaDestino == NULL){
-			return TAB_CondRetPosicaoVazia;
-		}
-		
-		if(LIS_CriarLista(idLista, ExcluirValor, lista) != LIS_CondRetOK) return TAB_CondRetErro;
-		
-		for(y=0; y<tabuleiro->linhas; y++){
-			for(x=0; x<tabuleiro->colunas; x++){
-				if(!(x==colunaInicial && y== linhaInicial)){
-					pPecaOrigem = tabuleiro->posicoes[y][x];
-					if(pPecaOrigem != NULL){
-						if(PEC_Mover(pPecaOrigem, x, y, colunaInicial, linhaInicial) == PEC_CondRetOK){
-							if(PEC_ComparaPeca(pPecaDestino, pPecaOrigem) == PEC_CondRetTimeDiferente){
-								ameacanteId = (char*) malloc(sizeof(char)*4);
-								if(PEC_ObterIdentificadorPeca(pPecaOrigem, &ameacanteId) != PEC_CondRetOK){
-									return TAB_CondRetErro;
-								}
-								LIS_InserirElemento((*lista), ameacanteId);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		return TAB_CondRetOK;
-	}/* Fim função: TAB  &Obter ameacantes */
+TAB_tpCondRet TAB_RetirarPeca(TAB_tppTabuleiro * pTabuleiro, char * pCoordenada)
+{	
+   tpCasa * pCasa;
+   TAB_tppTabuleiro pTabTemp;
 
-	
+   if (pTabuleiro == NULL)
+   {
+	   return TAB_CondRetNaoExiste;
+   } /* if */
+
+   pTabTemp = *pTabuleiro;
+
+   if ( ! ValidarCoordenada( pCoordenada ) )
+   {
+	   return TAB_CondRetCasaInexistente;
+   } /* if */
+
+   pCasa = ObterCasa(pTabTemp->pMatriz, pCoordenada);
+   pCasa->cor = COR_CASA_VAZIA;
+   strcpy(pCasa->nome, PECA_CASA_VAZIA);
+   
+   AtualizaListas( pTabTemp );
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Retirar peca */
+
+
 /***************************************************************************
 *
-*  Função: TAB  &Obter ameacados
+*  Função: TAB  &Obter peca
 *  ****/
- TAB_tpCondRet TAB_ObterListaAmeacados(int linhaInicial, int colunaInicial, LIS_tppLista* lista,
-	TAB_tppTabuleiro tabuleiro){
-		
-		char* ameacadoId;
-		int x, y;
-		char* idLista= "D";
-		PEC_tppPeca pPecaOrigem;
-		PEC_tppPeca pPecaDestino;
-				
-		if(posicaoInvalida(linhaInicial, colunaInicial, tabuleiro)){
-			return TAB_CondRetForaTabuleiro;
-		}
 
-		pPecaOrigem = tabuleiro->posicoes[linhaInicial][colunaInicial];
-		
-		if(pPecaOrigem == NULL){
-			return TAB_CondRetPosicaoVazia;
-		}
-		
-		if(LIS_CriarLista(idLista, ExcluirValor, lista) != LIS_CondRetOK) return TAB_CondRetErro;
-		
-		for(y=0; y<tabuleiro->linhas; y++){
-			for(x=0; x<tabuleiro->colunas; x++){
-				if(!(x==colunaInicial && y== linhaInicial)){
-					if(PEC_Mover(pPecaOrigem, colunaInicial, linhaInicial, x, y) == PEC_CondRetOK){
-						pPecaDestino = tabuleiro->posicoes[y][x];
-						if(pPecaDestino != NULL){
-							if(PEC_ComparaPeca(pPecaDestino, pPecaOrigem) == PEC_CondRetTimeDiferente){
-								ameacadoId = (char*) malloc(sizeof(char)*4);
-								if(PEC_ObterIdentificadorPeca(pPecaDestino, &ameacadoId) != PEC_CondRetOK){
-									return TAB_CondRetErro;
-								}
-								LIS_InserirElemento((*lista), ameacadoId);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		return TAB_CondRetOK;
-	}/* Fim função: TAB  &Obter ameacados */
+TAB_tpCondRet TAB_ObterPeca(TAB_tppTabuleiro * pTabuleiro, char * pCoordenada, char * pCor, char ** pNome)
+{
+   TAB_tppTabuleiro pTabTemp;
+
+   tpCasa * pCasa;
+
+   if (pTabuleiro == NULL)
+   {
+	   return TAB_CondRetNaoExiste;
+   } /* if */
+
+   pTabTemp = *pTabuleiro;
+
+   if ( ! ValidarCoordenada( pCoordenada ) )
+   {
+	   return TAB_CondRetCasaInexistente;
+   } /* if */
+
+   pCasa  = ObterCasa( pTabTemp->pMatriz, pCoordenada );
+
+   *pCor  = pCasa->cor;
+   *pNome = ( char * ) malloc( (strlen( pCasa->nome ) + 1) * sizeof( char ) );
+   strcpy( *pNome, pCasa->nome );
+
+   if (pCasa->cor == COR_CASA_VAZIA)
+   {
+	   return TAB_CondRetCasaVazia;
+   }
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Obter peca */
 
 
-	/***************************************************************************
+/***************************************************************************
 *
-*  Função: TAB  &Destriuir tabuleiro
+*  Função: TAB  &Obter lista ameaçantes
 *  ****/
- TAB_tpCondRet TAB_DestruirTabuleiro(TAB_tppTabuleiro tabuleiro){
-	
-		int lin, col;
-		int numLinhas = tabuleiro->linhas;
-		int numColunas = tabuleiro->colunas;
-		
-		for(lin = 0; lin < numLinhas; lin++){
-			
-			for(col = 0; col < numColunas; col++){
- 
-				if( tabuleiro->posicoes[lin][col] != NULL){	
-					PEC_LiberarPeca(tabuleiro->posicoes[lin][col]);
-				}
-			}	
-			free(tabuleiro->posicoes[lin]);
-		}	
-		return TAB_CondRetOK;
-	}/* Fim função: TAB &Destriuir tabuleiro */
-	
 
+TAB_tpCondRet TAB_ObterListaAmeacantes(TAB_tppTabuleiro * pTabuleiro, char * pCoordenada, LIS_tppLista * pLista)
+{
+   tpCasa * pCasa;
+   TAB_tppTabuleiro pTabTemp;
+
+   if (pTabuleiro == NULL)
+   {
+	   return TAB_CondRetNaoExiste;
+   } /* if */
+
+   pTabTemp = *pTabuleiro;
+
+   if (! ValidarCoordenada( pCoordenada ) )
+   {
+	   return TAB_CondRetCasaInexistente;
+   } /* if */
+
+   pCasa   = ObterCasa(pTabTemp->pMatriz, pCoordenada);
+   *pLista = pCasa->pAmeacantes;
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Obter lista ameacantes */
+
+
+/***************************************************************************
+*
+*  Função: TAB  &Obter lista ameaçados
+*  ****/
+
+TAB_tpCondRet TAB_ObterListaAmeacados(TAB_tppTabuleiro * pTabuleiro, char * pCoordenada, LIS_tppLista * pLista)
+{
+   tpCasa * pCasa;
+   TAB_tppTabuleiro pTabTemp;
+
+   if (pTabuleiro == NULL)
+   {
+	   return TAB_CondRetNaoExiste;
+   } /* if */
+
+   pTabTemp = *pTabuleiro;
+
+   if ( ! ValidarCoordenada( pCoordenada ) )
+   {
+	   return TAB_CondRetCasaInexistente;
+   } /* if */
+
+   pCasa   = ObterCasa(pTabTemp->pMatriz, pCoordenada);
+   *pLista = pCasa->pAmeacados;
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Obter lista ameacados */
+
+
+/***************************************************************************
+*
+*  Função: TAB  &Destruir tabuleiro
+*  ****/
+
+TAB_tpCondRet TAB_DestruirTabuleiro(TAB_tppTabuleiro * pTabuleiro)
+{
+   TAB_tppTabuleiro pTabTemp;
+
+   if ( pTabuleiro == NULL )
+   {
+	   return TAB_CondRetNaoExiste;
+   } /* if */
+
+   pTabTemp = *pTabuleiro;
+
+   LIS_DestruirLista( pTabTemp->pMatriz );
+   LIS_DestruirLista( pTabTemp->pPecas  );
+   free( pTabTemp );
+
+   return TAB_CondRetOK;
+
+} /* Fim função: TAB  &Destruir tabuleiro */
 
 
 /*****  Código das funções encapsuladas no módulo  *****/
-   
+
 /***********************************************************************
 *
-*  $FC Função: TAB  -Validar posicao
+*  $FC Função: TLIS -Destruir valor peca
 *
 ***********************************************************************/
 
-   int posicaoInvalida(int x, int y, TAB_tppTabuleiro tabuleiro){
-		if((x < 0) || (x >= tabuleiro->linhas) ||
-			(y < 0) ||(y >= tabuleiro->colunas)){
-			return TAB_CondRetErro;
+void DestruirValorPeca(void * pValor)
+{
+	tpPeca * tempPeca = (tpPeca*)pValor;
+	LIS_DestruirLista( tempPeca->pAndar );
+	LIS_DestruirLista( tempPeca->pComer );
+	free(pValor);
+} /* Fim função: TAB -Destruir valor peca*/
+
+
+/***********************************************************************
+*
+*  $FC Função: TLIS -Destruir valor generico
+*
+***********************************************************************/
+
+void DestruirValorGenerico(void * pValor)
+{
+	free( pValor );
+} /* Fim função: TAB -Destruir valor generico*/
+
+
+/***********************************************************************
+*
+*  $FC Função: TLIS -Destruir valor matriz
+*
+***********************************************************************/
+
+void DestruirValorMatriz(void * pValor)
+{
+	LIS_DestruirLista( (LIS_tppLista) pValor );
+} /* Fim função: TAB -Destruir valor matriz*/
+
+
+/***********************************************************************
+*
+*  $FC Função: TLIS -Destruir valor casa
+*
+***********************************************************************/
+
+void DestruirValorCasa(void * pValor)
+{
+	tpCasa * tempCasa = (tpCasa*)pValor;
+	LIS_DestruirLista(tempCasa->pAmeacados);
+	LIS_DestruirLista(tempCasa->pAmeacantes);
+	free(pValor);
+} /* Fim função: TAB -Destruir valor casa*/
+
+
+/***********************************************************************
+*
+*  $FC Função: TLIS -Criar casa
+*
+***********************************************************************/
+
+TAB_tpCondRet CriarCasa( tpCasa ** pCasa )
+{
+	LIS_tpCondRet CondRet;
+
+	tpCasa * pCasaTemp = ( tpCasa * ) malloc( sizeof( tpCasa ) );
+	if( pCasaTemp == NULL )
+	{
+		return TAB_CondRetFaltouMemoria;
+	}
+
+	pCasaTemp->primeiroMov = 0;
+	pCasaTemp->cor = COR_CASA_VAZIA;
+
+	#ifdef _DEBUG
+		pCasaTemp->tipoCasa = 'c';
+	#endif
+
+	strcpy( pCasaTemp->nome, PECA_CASA_VAZIA );
+
+	CondRet = LIS_CriarLista( "amdo", DestruirValorGenerico, &pCasaTemp->pAmeacados  );
+	if( CondRet != LIS_CondRetOK )
+	{
+		return TAB_CondRetFaltouMemoria;
+	}
+
+	CondRet = LIS_CriarLista( "amte", DestruirValorGenerico, &pCasaTemp->pAmeacantes );
+	if( CondRet != LIS_CondRetOK )
+	{
+		return TAB_CondRetFaltouMemoria;
+	}
+
+	*pCasa = pCasaTemp;
+
+	return TAB_CondRetOK;
+
+} /* Fim função: TAB -Criar casa*/
+
+/***********************************************************************
+*
+*  $FC Função: TLIS -Criar peça
+*
+***********************************************************************/
+
+TAB_tpCondRet CriarPeca( tpPeca ** pPeca )
+{
+	tpPeca * novaPeca;
+
+	LIS_tpCondRet CondRetLista;
+
+	novaPeca = ( tpPeca * ) malloc( sizeof( tpPeca ) );
+	if( novaPeca == NULL )
+	{
+		return TAB_CondRetFaltouMemoria;
+	}
+
+	CondRetLista = LIS_CriarLista( "a", DestruirValorGenerico, &novaPeca->pAndar );
+	if( CondRetLista != LIS_CondRetOK )
+	{
+		return TAB_CondRetFaltouMemoria;
+	}
+
+	CondRetLista = LIS_CriarLista( "c", DestruirValorGenerico, &novaPeca->pComer );
+	if( CondRetLista != LIS_CondRetOK )
+	{
+		return TAB_CondRetFaltouMemoria;
+	}
+
+	*pPeca = novaPeca;
+
+	return TAB_CondRetOK;
+
+} /* Fim função: TAB -Criar peca*/
+
+/***********************************************************************
+*
+*  $FC Função: TAB  -Ler Arquivo de peças
+*
+***********************************************************************/
+
+TAB_tpCondRet LerArquivoPecas( LIS_tppLista * pListaPecas )
+{
+	LIS_tpCondRet CondRetLista;
+	TAB_tpCondRet CondRetTab;
+
+	tpPeca* pecaTemp;
+	tpMovimentoPeca* movPeca;
+
+	char line[50];
+	FILE * pFile = fopen(pathArquivo, "r");
+	if ( pFile == NULL )
+	{
+		printf( "\nErro, nao foi possivel abrir o arquivo de entrada.\n" );
+		return TAB_CondRetEntradaInvalida;
+	}
+
+	CondRetLista = LIS_CriarLista("p", DestruirValorPeca, pListaPecas );
+	if( CondRetLista != LIS_CondRetOK )
+	{
+		return TAB_CondRetFaltouMemoria;
+	}
+
+	while ( fgets (line, sizeof( line ), pFile ) != NULL )
+	{
+		if ( strncmp( line, ">>>>>>>>>>", 10 ) == 0 )
+		{
+			CondRetTab = CriarPeca( &pecaTemp );
+			if( CondRetTab != TAB_CondRetOK )
+			{
+				return TAB_CondRetFaltouMemoria;
+			}
 		}
-		
-		return TAB_CondRetOK;
-	}/* Fim função: TAB  -Validar posicao */
-	
-	
+		else if ( strncmp( line, "Nome", 4 ) == 0 )
+		{
+			int i;
+			strncpy( pecaTemp->nome, &line[5], 4 );
+
+			for ( i = 0; i < 4; i++ )
+			{
+				if ( pecaTemp->nome[i] == '\n' )
+				{
+					pecaTemp->nome[i] = '\0';
+				}
+			}
+
+		}
+		else if ( ( strncmp( line, "--Andar", 7 ) == 0 ) || ( strncmp( line, "--Comer", 7 ) == 0) )
+		{
+			movPeca = ( tpMovimentoPeca * ) malloc( sizeof( tpMovimentoPeca ) );
+			if( movPeca == NULL )
+			{
+				return TAB_CondRetFaltouMemoria;
+			}
+		}
+		else if ( strncmp( line, "Oeste", 5 ) == 0 )
+		{
+			movPeca->coordenadas[0] = line[6] - '0';
+		}
+		else if ( strncmp( line, "Norte", 5 ) == 0 )
+		{
+			movPeca->coordenadas[1] = line[6] - '0';
+		}
+		else if ( strncmp( line, "Leste", 5 ) == 0 )
+		{
+			movPeca->coordenadas[2] = line[6] - '0';
+		}
+		else if ( strncmp( line, "Sul", 3 ) == 0 )
+		{
+			movPeca->coordenadas[3] = line[4] - '0';
+		}
+		else if ( strncmp( line, "Max", 3 ) == 0 ) 
+		{
+			movPeca->max = line[4] - '0';
+		}
+		else if ( strncmp( line, "Min", 3 ) == 0 )
+		{
+			movPeca->min = line[4] - '0';
+		}
+		else if ( strncmp( line, "Primeiro", 8 ) == 0 )
+		{
+			movPeca->primeiroMov = line[9] - '0';
+		}
+		else if ( strncmp( line, "--FimAndar", 10 ) == 0 )
+		{	
+			CondRetLista = LIS_InserirElemento(pecaTemp->pAndar, movPeca);
+			if( CondRetLista != LIS_CondRetOK )
+			{
+				return TAB_CondRetFaltouMemoria;
+			}
+		}
+		else if (strncmp(line, "--FimComer", 10) == 0)
+		{
+			CondRetLista = LIS_InserirElemento(pecaTemp->pComer, movPeca);
+			if( CondRetLista != LIS_CondRetOK )
+			{
+				return TAB_CondRetFaltouMemoria;
+			}
+		}
+		else if ( strncmp( line, "<<<<<<<<<<", 10 ) == 0 )
+		{
+			CondRetLista = LIS_InserirElemento( *pListaPecas, pecaTemp);
+			if( CondRetLista != LIS_CondRetOK )
+			{
+				return TAB_CondRetFaltouMemoria;
+			}
+		}
+		else
+		{
+			return TAB_CondRetEntradaInvalida;
+		}
+	}
+	fclose(pFile);
+	return TAB_CondRetOK;
+}
+
 /***********************************************************************
 *
-*  $FC Função: TAB  -Excluir valor da lista
+*  $FC Função: TAB  -Validar Tipo Peca
 *
 ***********************************************************************/
-   void ExcluirValor ( void * pDado ) {
-		free(pDado);
-		//PEC_LiberarPeca(pDado);
-   } /* Fim função: TAB -Excluir */  
-	
-	
 
-/********** Fim do módulo de implementação: TAB  Tabuleiro de jogo generico **********/
+int ValidarTipoPeca( LIS_tppLista pLista, char * nome )
+{
+	tpPeca * pPeca;
+	LIS_tpCondRet CondRet;
+
+	CondRet = LIS_AndarInicio( pLista );
+	while( CondRet == LIS_CondRetOK  )
+	{
+		LIS_ObterElemento( pLista, ( void ** ) &pPeca );
+		if ( strcmp( nome, pPeca->nome ) == 0 )
+		{
+			return TRUE;
+		}
+
+		CondRet = LIS_IrProxElemento( pLista );
+	}
+
+	return FALSE;
+}
+
+/***********************************************************************
+*
+*  $FC Função: TAB  -Validar Cor Peca
+*
+***********************************************************************/
+
+int ValidarCorPeca( char cor )
+{
+	if (cor != 'p' && cor != 'b' && cor != 'P' && cor != 'B')
+	{
+		return FALSE;
+	} /* if */
+
+	return TRUE;
+}
+
+/***********************************************************************
+*
+*  $FC Função: TAB  -Validar Coordenada
+*
+***********************************************************************/
+
+int ValidarCoordenada( char * pCoordenada )
+{
+	if ( ! ( pCoordenada[0] >= 'A' && pCoordenada[0] <= 'H' ) &&
+	     ! ( pCoordenada[0] >= 'a' && pCoordenada[0] <= 'h' ) )
+	{
+		return FALSE;
+	} /* if */
+
+	if ( ! ( pCoordenada[1] >= '1' && pCoordenada[1] <= '8' ) )
+	{
+		return FALSE;
+	} /* if */
+
+	return TRUE;
+}
+
+/***********************************************************************
+*
+*  $FC Função: TAB  -Obter Casa
+*
+***********************************************************************/
+
+tpCasa * ObterCasa(LIS_tppLista pLista, char * pCoordenada)
+{
+	int linha, coluna, i;
+	tpCasa * pCasa;
+	LIS_tppLista pListaCasa;
+
+	coluna = ( pCoordenada[0] < 'a' ) ? pCoordenada[0] - 'A' : pCoordenada[0] - 'a';
+	linha  =   pCoordenada[1] - '1';
+
+	LIS_AndarInicio(pLista);
+	for ( i = 0; i < coluna; i ++ )
+	{
+		LIS_IrProxElemento(pLista);
+	}
+
+	LIS_ObterElemento(pLista, (void**) &pListaCasa);
+
+	LIS_AndarInicio( pListaCasa );
+	for ( i = 0; i < linha; i++ )
+	{
+		LIS_IrProxElemento(pListaCasa);
+	}
+
+	LIS_ObterElemento( pListaCasa, (void**) &pCasa );
+
+	return pCasa;
+
+}
+
+/***********************************************************************
+*
+*  $FC Função: TAB  -Validar movimento
+*
+***********************************************************************/
+
+int ValidarMovimento(TAB_tppTabuleiro pTabuleiro, char * origem, char * destino, int atualizarLista)
+{
+	int i;
+
+	char pAlcance[3];
+
+	int comer, branco;
+
+	LIS_tppLista  pMovimento = NULL;
+	LIS_tpCondRet CondRet = LIS_CondRetOK;
+
+	tpPeca * pPeca;
+	tpMovimentoPeca * pMov;
+
+	tpCasa * pCasaOrigem;
+	tpCasa * pCasaDestino;
+	tpCasa * pCasaTemp;
+
+	if( strcmp( origem, destino ) == 0 )
+	{
+		return FALSE;
+	}
+
+	pCasaOrigem  = ObterCasa( pTabuleiro->pMatriz, origem );
+	pCasaDestino = ObterCasa( pTabuleiro->pMatriz, destino );
+
+	if( pCasaOrigem->cor == pCasaDestino->cor )
+	{
+		return FALSE;
+	}
+
+	if (!strcmp(pCasaOrigem->nome, PECA_CASA_VAZIA))
+	{
+		return FALSE;
+	}
+
+	comer  = strcmp( pCasaDestino->nome, PECA_CASA_VAZIA ) ? TRUE : FALSE;
+	branco = ( pCasaOrigem->cor == 'b' || pCasaOrigem->cor == 'B' ) ? 1 : -1;
+
+	for ( LIS_AndarInicio( pTabuleiro->pPecas ); CondRet != LIS_CondRetFimLista; CondRet = LIS_IrProxElemento( pTabuleiro->pPecas ) )
+	{
+		LIS_ObterElemento( pTabuleiro->pPecas, ( void ** ) &pPeca );
+
+		if ( strcmp( pCasaOrigem->nome, pPeca->nome ) == 0 )
+		{
+			/* Verifica se a peça vai andar ou comer, menos no caso de atualizar listas ameaçante e ameaçado */
+			if (atualizarLista)
+			{
+				pMovimento = pPeca->pComer;
+			}
+			else
+			{
+				comer ? (pMovimento = pPeca->pComer) : (pMovimento = pPeca->pAndar);
+			}
+			break;
+		
+		}
+	}
+
+	for ( LIS_AndarInicio( pMovimento ); CondRet != LIS_CondRetFimLista; CondRet = LIS_IrProxElemento( pMovimento ) )
+	{
+		LIS_ObterElemento( pMovimento, ( void ** ) &pMov );
+
+		if ( pMov->primeiroMov && ! pCasaOrigem->primeiroMov )
+		{
+			/*
+			 * Verifica se é o primeiro movimento da peça
+			 * Se sim permite a utização de movimentos
+			 * autorizados somente no primeiro movimento.
+			 */
+			continue;
+		}
+
+		pAlcance[0] = origem[0];
+		pAlcance[1] = origem[1];
+
+		for ( i = 1; i <= pMov->max; i++ )
+		{
+			pAlcance[0] = pAlcance[0] + branco * ( pMov->coordenadas[2] ) - branco * ( pMov->coordenadas[0] );
+			pAlcance[1] = pAlcance[1] + branco * ( pMov->coordenadas[1] ) - branco * ( pMov->coordenadas[3] );
+			pAlcance[2] = '\0';
+
+			if ( ! ValidarCoordenada ( pAlcance ) )
+			{
+				/*
+				* Movimento já está fora do tabuleiro!
+				* Peça não precisa mover mais do que isso.
+				*/
+				break;
+			}
+
+			pCasaTemp = ObterCasa( pTabuleiro->pMatriz, pAlcance );
+
+			if ( strcmp( pAlcance, destino ) == 0 )
+			{
+				/* Movimento para a casa destino existe! */
+				//pCasaTemp = ObterCasa( pTabuleiro->pMatriz, pAlcance );
+				if( strcmp( pCasaTemp->nome, PECA_CASA_VAZIA ) != 0 )
+				{
+					/* Ops! A casa destino está ocupada! */
+					if( ! comer )
+					{
+						/*
+						* Peça não pode se mover para casa já ocupada!
+						* Peça não precisa mover mais do que isso.
+						*/
+						break;
+					}
+				}
+
+				if( i >= pMov->min )
+				{
+					/* Peça já andou o mínimo necessário */
+					return TRUE;
+				}
+			}
+			else
+			{
+				if (strcmp(pCasaTemp->nome, PECA_CASA_VAZIA) != 0)
+				{
+					/* Ops! Ocorreu uma colisão */
+					break;
+				}
+			}
+		}
+	}
+
+	return FALSE;
+}
+
+/***********************************************************************
+*
+*  $FC Função: TAB  -Atualiza listas
+*
+***********************************************************************/
+
+static void AtualizaListas( TAB_tppTabuleiro pTabuleiro )
+{
+	int i, j, k, l;
+
+	int ameaca, ameacado;
+
+	char  coordenada[3];
+	char  alcance[3];
+	char* pValor;
+
+	LIS_tppLista pAmeacados, pAmeacantes;
+	tpCasa * pCasa;
+	tpCasa * pCasaTemp;
+
+	for ( i = 0; i < 8; i++ )
+	{
+		for ( j = 0; j < 8; j++ )
+		{
+			/*
+			 * Itera por todas as casas do tabuleiro
+			 */
+			coordenada[0] = 'A' + i;
+			coordenada[1] = '1' + j;
+			coordenada[2] = '\0';
+
+			LIS_CriarLista( "amdo", DestruirValorGenerico, &pAmeacados  );
+			LIS_CriarLista( "amte", DestruirValorGenerico, &pAmeacantes );
+
+			pCasa = ObterCasa( pTabuleiro->pMatriz, coordenada );
+
+			for ( k = 0; k < 8; k++ )
+			{
+				for ( l = 0; l < 8; l++ )
+				{
+					/*
+					* Testa em todas as casas do tabuleiro se as mesmas
+					* possuem uma peça inimiga que ameaça ou é ameaçada
+					* pela peça obtida anteriormente.
+					*/
+
+					alcance[0] = 'A' + k;
+					alcance[1] = '1' + l;
+					alcance[2] = '\0';
+
+					if( strcmp( coordenada, alcance ) == 0 )
+					{
+						/*
+						 * Coordenada e Alcance são a mesma casa.
+						 */
+						break;
+					}
+
+					ameaca   = ValidarMovimento( pTabuleiro, coordenada, alcance, TRUE );
+					ameacado = ValidarMovimento( pTabuleiro, alcance, coordenada, TRUE );
+
+					pCasaTemp = ObterCasa( pTabuleiro->pMatriz, alcance );
+
+					if( ameaca && ( pCasa->cor != COR_CASA_VAZIA ) && ( pCasa->cor != pCasaTemp->cor ) )
+					{
+						/*
+						* Se ameaça uma casa contendo uma peça inimiga,
+						* a casa inimiga é adicionada a lista de casas ameaçadas.
+						*/
+						pValor = ( char* ) malloc( sizeof( alcance ) );
+						if( pValor == NULL )
+						{
+							exit( 1 );
+						}
+						strcpy( pValor, alcance );
+						LIS_InserirElemento( pAmeacados, pValor );
+					}
+					if( ameacado && ( pCasaTemp->cor != COR_CASA_VAZIA ) && ( pCasa->cor != pCasaTemp->cor ) )
+					{
+						/*
+						* Se é ameaçada por uma casa contendo uma peça inimiga,
+						* a casa inimiga é adicionada a lista de casas ameaçantes.
+						*/
+						pValor = ( char* ) malloc( sizeof( alcance ) );
+						if( pValor == NULL )
+						{
+							exit(1);
+						}
+						strcpy( pValor, alcance );
+						LIS_InserirElemento( pAmeacantes, pValor );
+					}
+				}
+			}
+
+			LIS_DestruirLista( pCasa->pAmeacados  );
+			LIS_DestruirLista( pCasa->pAmeacantes );
+
+			pCasa->pAmeacados  = pAmeacados;
+			pCasa->pAmeacantes = pAmeacantes;
+		}
+	}
+}
+/***********************************************************************
+*
+*  $FC Função: TAB  -Verifica
+*
+***********************************************************************/
+	TAB_tpCondRet TAB_Verifica ( TAB_tppTabuleiro * pTabuleiro, int* numErros )
+	{
+		int i = 0;
+		(*numErros) = 0;
+
+		if( pTabuleiro != NULL && pTabuleiro->quantidadeNos > 0){
+
+			if( LIS_ObterElemento(pTabuleiro))
+		}
+	}
+
+
+
+
+
+
+
+
 

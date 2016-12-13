@@ -1,0 +1,12 @@
+Mude a extensão do "TRAB3-1" na pasta TRAB3-1 e do "TRAB3-2" na pasta TRAB3-2 de .txt para .exe.
+
+Para testar o módulo jogo, clique duas vezes em TestaTudo.bat na pasta TRAB3-1.
+O log de saida será criado na mesma pasta com o nome de "TesteJogo.txt"".
+
+Para utilizar o programa, clique duas vezes em JogarXadrez.bat na pasta TRAB3-2.
+
+Leia o "ManualXadrez.txt" para saber como operar sobre o tabuleiro.
+
+Informações sobre a estrutura peça:
+'u'    é cor reservada
+'xxx'  é peça reservada

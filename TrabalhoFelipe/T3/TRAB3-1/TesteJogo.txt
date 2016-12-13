@@ -1,0 +1,284 @@
+
+
+LES - Laboratório de Engenharia de Software DI/PUC-Rio
+      Arcabouço de teste de módulos C  (c) 2006
+
+---------------------------------------------
+      Construto sob teste: TRAB3-1.exe
+
+      Arquivo de teste:    TesteJogo.script
+
+
+!!!    0  Linha:     1  // Script:    TesteJogo.script 
+!!!    0  Linha:     2  // Autor:     Pedro Ferreira, Felipe Pessoa, Matheus de Mello 
+!!!    0  Linha:     3  // Data:      02/nov/2016 
+!!!    0  Linha:     4  // Propósito: Testar o módulo jogo de xadrez 
+    6  == Inicializar valores
+   28  == Montar tabuleiro - Arquivo nao existe
+Erro, nao foi possivel abrir o arquivo de pecas do tabuleiro.
+
+   31  == Montar tabuleiro - Fora do padrao
+   34  == Montar tabuleiro - OK
+   37  == Recebe jogadores - OK
+   40  == Inicia jogo - OK
+   43  == Cheque Mate - Nao existe rei
+   47  == Recebe jogada - FIM
+   50  == Montar tabuleiro - OK
+   53  == Mostrar tabuleiro - Jogo parado
+   56  == Cheque Mate - Jogo parado
+   60  == Recebe jogadores - OK
+   63  == Recebe jogada - Jogo Parado
+   66  == Inicia jogo - OK
+   69  == Inicia jogo - Jogo em andamento
+   72  == Recebe jogadores - Jogo em andamento
+   75  == Montar tabuleiro - Jogo em andamento
+   78  == Mostrar tabuleiro - OK
+
+  A   B   C   D   E   F   G   H
+---------------------------------
+|tp |cp |bp |qp |kp |bp |cp |tp | 8
+---------------------------------
+|pp |pp |pp |pp |pp |pp |pp |pp | 7
+---------------------------------
+|   |   |   |   |   |   |   |   | 6
+---------------------------------
+|   |   |   |   |   |   |   |   | 5
+---------------------------------
+|   |   |   |   |   |   |   |   | 4
+---------------------------------
+|   |   |   |   |   |   |   |   | 3
+---------------------------------
+|pb |pb |pb |pb |pb |pb |pb |pb | 2
+---------------------------------
+|tb |cb |bb |qb |kb |bb |cb |tb | 1
+---------------------------------
+
+
+
+   81  == Recebe jogada - OK
+Casas ameacadas pela peca:
+D5
+F5
+
+Casas que ameacam a peca:
+
+   84  == Cheque Mate - OK
+   88  == Recebe jogada - Movimento inválido
+Movimento Invalido
+
+   91  == Mostrar tabuleiro - OK
+
+  A   B   C   D   E   F   G   H
+---------------------------------
+|tp |cp |bp |qp |kp |bp |cp |tp | 8
+---------------------------------
+|pp |pp |pp |pp |pp |pp |pp |pp | 7
+---------------------------------
+|   |   |   |   |   |   |   |   | 6
+---------------------------------
+|   |   |   |   |   |   |   |   | 5
+---------------------------------
+|   |   |   |   |pb |   |   |   | 4
+---------------------------------
+|   |   |   |   |   |   |   |   | 3
+---------------------------------
+|pb |pb |pb |pb |   |pb |pb |pb | 2
+---------------------------------
+|tb |cb |bb |qb |kb |bb |cb |tb | 1
+---------------------------------
+
+
+
+   94  == Recebe jogada - OK
+Casas ameacadas pela peca:
+B5
+
+Casas que ameacam a peca:
+F1
+
+   97  == Cheque Mate - OK
+  101  == Mostrar tabuleiro - OK
+
+  A   B   C   D   E   F   G   H
+---------------------------------
+|tp |cp |bp |qp |kp |bp |cp |tp | 8
+---------------------------------
+|   |pp |pp |pp |pp |pp |pp |pp | 7
+---------------------------------
+|pp |   |   |   |   |   |   |   | 6
+---------------------------------
+|   |   |   |   |   |   |   |   | 5
+---------------------------------
+|   |   |   |   |pb |   |   |   | 4
+---------------------------------
+|   |   |   |   |   |   |   |   | 3
+---------------------------------
+|pb |pb |pb |pb |   |pb |pb |pb | 2
+---------------------------------
+|tb |cb |bb |qb |kb |bb |cb |tb | 1
+---------------------------------
+
+
+
+  104  == Recebe jogada - OK
+Casas ameacadas pela peca:
+A6
+B3
+B5
+D3
+D5
+E2
+E6
+F1
+F7
+
+Casas que ameacam a peca:
+
+  107  == Cheque Mate - OK
+  111  == Mostrar tabuleiro - OK
+
+  A   B   C   D   E   F   G   H
+---------------------------------
+|tp |cp |bp |qp |kp |bp |cp |tp | 8
+---------------------------------
+|   |pp |pp |pp |pp |pp |pp |pp | 7
+---------------------------------
+|pp |   |   |   |   |   |   |   | 6
+---------------------------------
+|   |   |   |   |   |   |   |   | 5
+---------------------------------
+|   |   |bb |   |pb |   |   |   | 4
+---------------------------------
+|   |   |   |   |   |   |   |   | 3
+---------------------------------
+|pb |pb |pb |pb |   |pb |pb |pb | 2
+---------------------------------
+|tb |cb |bb |qb |kb |   |cb |tb | 1
+---------------------------------
+
+
+
+  114  == Recebe jogada - OK
+Casas ameacadas pela peca:
+B4
+
+Casas que ameacam a peca:
+
+  117  == Cheque Mate - OK
+  121  == Mostrar tabuleiro - OK
+
+  A   B   C   D   E   F   G   H
+---------------------------------
+|tp |cp |bp |qp |kp |bp |cp |tp | 8
+---------------------------------
+|   |pp |pp |pp |pp |pp |pp |pp | 7
+---------------------------------
+|   |   |   |   |   |   |   |   | 6
+---------------------------------
+|pp |   |   |   |   |   |   |   | 5
+---------------------------------
+|   |   |bb |   |pb |   |   |   | 4
+---------------------------------
+|   |   |   |   |   |   |   |   | 3
+---------------------------------
+|pb |pb |pb |pb |   |pb |pb |pb | 2
+---------------------------------
+|tb |cb |bb |qb |kb |   |cb |tb | 1
+---------------------------------
+
+
+
+  124  == Recebe jogada - OK
+Casas ameacadas pela peca:
+F4
+G1
+G5
+
+Casas que ameacam a peca:
+
+  127  == Cheque Mate - OK
+  131  == Mostrar tabuleiro - OK
+
+  A   B   C   D   E   F   G   H
+---------------------------------
+|tp |cp |bp |qp |kp |bp |cp |tp | 8
+---------------------------------
+|   |pp |pp |pp |pp |pp |pp |pp | 7
+---------------------------------
+|   |   |   |   |   |   |   |   | 6
+---------------------------------
+|pp |   |   |   |   |   |   |   | 5
+---------------------------------
+|   |   |bb |   |pb |   |   |   | 4
+---------------------------------
+|   |   |   |   |   |   |   |cb | 3
+---------------------------------
+|pb |pb |pb |pb |   |pb |pb |pb | 2
+---------------------------------
+|tb |cb |bb |qb |kb |   |   |tb | 1
+---------------------------------
+
+
+
+  134  == Recebe jogada
+Casas ameacadas pela peca:
+E4
+G4
+
+Casas que ameacam a peca:
+E4
+
+  137  == Cheque Mate - OK
+  141  == Recebe jogada
+Casas ameacadas pela peca:
+D1
+E2
+E8
+F3
+F5
+F7
+G4
+G5
+G6
+H4
+
+Casas que ameacam a peca:
+
+  144  == Mostrar tabuleiro - OK
+
+  A   B   C   D   E   F   G   H
+---------------------------------
+|tp |cp |bp |qp |kp |bp |cp |tp | 8
+---------------------------------
+|   |pp |pp |pp |pp |   |pp |pp | 7
+---------------------------------
+|   |   |   |   |   |   |   |   | 6
+---------------------------------
+|pp |   |   |   |   |pp |   |qb | 5
+---------------------------------
+|   |   |bb |   |pb |   |   |   | 4
+---------------------------------
+|   |   |   |   |   |   |   |cb | 3
+---------------------------------
+|pb |pb |pb |pb |   |pb |pb |pb | 2
+---------------------------------
+|tb |cb |bb |   |kb |   |   |tb | 1
+---------------------------------
+
+
+
+  147  == Cheque Mate - Cheque Mate
+
+JOGADOR player2 ESTA EM XEQUE MATE!!
+
+
+
+!!! Número de linhas lidas:         149
+!!! Número de casos de teste:        39
+!!! Número comandos corretos:        65
+!!! Número de falhas encontradas:     0
+
+!!! Não foram encontrados problemas
+
+
+!!! Numero de espacos ainda alocados: 0

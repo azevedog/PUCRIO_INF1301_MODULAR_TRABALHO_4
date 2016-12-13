@@ -1,0 +1,174 @@
+TIPO Rei
+MOV -1 -1
+MOV -1 0
+MOV -1 1
+MOV 0 -1
+MOV 0 1
+MOV 1 -1
+MOV 1 0
+MOV 1 1
+TIPO Rainha
+MOV -1 0
+MOV -2 0
+MOV -3 0
+MOV -4 0
+MOV -5 0
+MOV -6 0
+MOV -7 0
+MOV 0 -1
+MOV 0 -2
+MOV 0 -3
+MOV 0 -4
+MOV 0 -5
+MOV 0 -6
+MOV 0 -7
+MOV 0 1 
+MOV 0 2 
+MOV 0 3 
+MOV 0 4 
+MOV 0 5 
+MOV 0 6 
+MOV 0 7 
+MOV 1 0
+MOV 2 0
+MOV 3 0
+MOV 4 0
+MOV 5 0
+MOV 6 0
+MOV 7 0
+MOV -1 -1
+MOV -2 -2
+MOV -3 -3
+MOV -4 -4
+MOV -5 -5
+MOV -6 -6
+MOV -7 -7
+MOV 1 1
+MOV 2 2
+MOV 3 3
+MOV 4 4
+MOV 5 5
+MOV 6 6
+MOV 7 7
+MOV 1 -1
+MOV 2 -2
+MOV 3 -3
+MOV 4 -4
+MOV 5 -5
+MOV 6 -6
+MOV 7 -7
+MOV 1 -1
+MOV 2 -2
+MOV 3 -3
+MOV 4 -4
+MOV 5 -5
+MOV 6 -6
+MOV 7 -7
+TIPO Torre
+MOV -1 0
+MOV -2 0
+MOV -3 0
+MOV -4 0
+MOV -5 0
+MOV -6 0
+MOV -7 0
+MOV 0 -1
+MOV 0 -2
+MOV 0 -3
+MOV 0 -4
+MOV 0 -5
+MOV 0 -6
+MOV 0 -7
+MOV 0 1 
+MOV 0 2 
+MOV 0 3 
+MOV 0 4 
+MOV 0 5 
+MOV 0 6 
+MOV 0 7 
+MOV 1 0
+MOV 2 0
+MOV 3 0
+MOV 4 0
+MOV 5 0
+MOV 6 0
+MOV 7 0
+TIPO Bispo
+MOV -1 -1
+MOV -2 -2
+MOV -3 -3
+MOV -4 -4
+MOV -5 -5
+MOV -6 -6
+MOV -7 -7
+MOV 1 1
+MOV 2 2
+MOV 3 3
+MOV 4 4
+MOV 5 5
+MOV 6 6
+MOV 7 7
+MOV 1 -1
+MOV 2 -2
+MOV 3 -3
+MOV 4 -4
+MOV 5 -5
+MOV 6 -6
+MOV 7 -7
+MOV 1 -1
+MOV 2 -2
+MOV 3 -3
+MOV 4 -4
+MOV 5 -5
+MOV 6 -6
+MOV 7 -7
+TIPO Cavalo
+MOV 1 2
+MOV 1 -2
+MOV 2 1
+MOV 2 -1
+MOV -1 2
+MOV -1 -2
+MOV -2 1
+MOV -2 -1
+TIPO PeaoB
+MOV 1 0
+MOV 1 1
+MOV 1 -1
+TIPO PeaoP
+MOV -1 0
+MOV -1 -1
+MOV -1 1
+TABULEIRO
+Torre P 8 A
+Cavalo P 8 B
+Bispo P 8 C
+Rei P 8 D
+Rainha P 8 E
+Bispo P 8 F
+Cavalo P 8 G
+Torre P 8 H
+PeaoP P 7 A
+PeaoP P 7 B
+PeaoP P 7 C
+PeaoP P 7 D
+PeaoP P 7 E
+PeaoP P 7 F
+PeaoP P 7 G
+PeaoP P 7 H
+Torre B 1 A
+Cavalo B 1 B
+Bispo B 1 C
+Rei B 1 D
+Rainha B 1 E
+Bispo B 1 F
+Cavalo B 1 G
+Torre B 1 H
+PeaoB B 2 A
+PeaoB B 2 B
+PeaoB B 2 C
+PeaoB B 2 D
+PeaoB B 2 E
+PeaoB B 2 F
+PeaoB B 2 G
+PeaoB B 2 H

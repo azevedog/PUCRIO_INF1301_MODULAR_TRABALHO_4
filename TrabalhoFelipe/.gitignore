@@ -1,0 +1,20 @@
+*.user
+*.filters
+*.vcxproj
+T2/TRAB2-1/Debug/
+*.opensdf
+*.sdf
+*.sln
+*.suo
+*.ilk
+*.pdb
+T2/T1 - Atalho.lnk
+*.tlog
+T2/TRAB2-2/Debug/TRAB2-2.lastbuildstate
+T2/TRAB2-2/Debug/TRAB2-2.log
+T2/TRAB2-2/Debug/TRAB2-2.Build.CppClean.log
+T2/TRAB2-2/Debug/TESTTAB.obj
+T2/TRAB2-2/Debug/
+T3/TRAB3-1/Debug/
+T3/TRAB3-2/Debug/
+T3/INF1301-Trab03-FPFMMQPF/

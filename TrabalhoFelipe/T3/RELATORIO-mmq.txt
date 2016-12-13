@@ -1,0 +1,7 @@
+Data    Horas Trabalhadas   Tipo Tarefa                Descrição da Tarefa Realizada
+13/11         6             revisar código             Comentários e melhoria na legibilidade
+15/11         3             codificar                  Correção de bugs
+16/11         2             codificar                  Adequar os testes às correções feitas
+16/11         1             especificar os módulos     Atualização da estrutura unificada da aplicação
+16/11         3             especificar as funções     Criação da argumentação de corretude
+16/11         1             projetar                   Atualização dos batchs que automatizam a geração do projeto
