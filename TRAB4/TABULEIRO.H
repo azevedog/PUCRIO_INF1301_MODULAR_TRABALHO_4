@@ -1,3 +1,6 @@
+#if ! defined(TAB_)
+#define TAB_ 
+
 /***************************************************************************
 *
 *  $MCD Módulo de definição: TAB  Tabuleiro para jogo generico 
@@ -13,6 +16,7 @@
 *
 *  $HA Histórico de evolução:
 *     Versão  Autor    Data     Observações
+*		6 		mcs		8/12/2016	Modificacoes para instrumentacao
 *		5		gbha		14/nov/2016 Conlusao desenvolvimento T3
 *     4       gbha  13/Nov/2016 Ajustes para o T3
 *	   3       gbha  4/out/2016 Conclusao desenvolvimento
@@ -35,6 +39,12 @@
 *		SAO IMPLEMENTADAS FORA DESTE MODULO.
 *
 ***************************************************************************/
+
+#if defined (TAB_OWN)
+	#define TAB_EXT 
+#else 
+	#define TAB_EXT extern
+#endif
 
 #include "LISTA.h"
 
@@ -303,6 +313,16 @@ typedef enum {
 ***********************************************************************/
 
 	TAB_tpCondRet TAB_DestruirTabuleiro();
+
+#ifdef _DEBUG
+	void AlteraTipoTabuleiro();
+	char TAB_ObterTipo();
+	int TAB_ObterTamBytes();
+#endif
+
+#undef TAB_EXT
 	
 /********** Fim do módulo de definição: TAB Tabuleiro de jogo genérico. **********/
 
+#else
+#endif
