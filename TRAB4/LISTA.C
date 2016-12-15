@@ -17,7 +17,7 @@
 *
 *  $HA Histórico de evolução:
 *     Versão  Autor    Data     Observações
-*     8       mcs   10/dez/2016 Adicionar funcoes para o T$
+*     8       mcs   10/dez/2016 Adicionar funcoes para o T4
 *	   7		  fpf	 01/out/2016	Alteração das funções para somente retornar tpCondRet
 *     6       mmq   23/set/2016 adaptar para a utilizacao na aplicacao "Juiz de Xadrez"
 *     5       mmq   11/set/2016 alterar a função LIS_ProcuraValor

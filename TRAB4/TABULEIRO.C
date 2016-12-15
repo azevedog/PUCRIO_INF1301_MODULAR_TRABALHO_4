@@ -11,9 +11,12 @@
 *  Autores: pf - Pedro Ferreira
 *           mmq - Matheus de Mello Queiroz
 *			fpf - Felipe Pessoa de Freitas	
+*			mcs - Maria Carolina Santos
+*			gbha - Gustavo Azevedo
 *
 *  $HA Histórico de evolução:
-*     Versão  Autor     Data       Observações
+*     Versão  Autor    Data     Observações
+*	  7 	  mcs	15/dez/2016	mudanças para t4
 *     6       mmq    05/out/2016  revisao modulo e correções
 *     5       mmq    04/out/2016  correcao de bugs
 *     4       fpf    02/out/2016  desenvolvimento de funções

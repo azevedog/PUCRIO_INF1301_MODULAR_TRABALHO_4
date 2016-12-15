@@ -15,9 +15,12 @@
 *  Autores: avs - Arndt Von Staa
 *           fpf - Felipe Pessoa de Freitas
 *           mmq - Matheus de Mello Queiroz
+*			mcs - Maria Carolina Santos
+*			gbha - Gustavo Azevedo
 *
 *  $HA Histórico de evolução:
 *     Versão  Autor    Data     Observações
+*	  8 	  mcs	15/dez/2016	mudanças para t4
 *	  7		  fpf	01/out/2016	Alteração das funções para somente retornar tpCondRet
 *     6       mmq   23/set/2016 adaptar para a utilizacao na aplicacao "Juiz de Xadrez"
 *     5       mmq   11/set/2016 alterar a função LIS_ProcuraValor

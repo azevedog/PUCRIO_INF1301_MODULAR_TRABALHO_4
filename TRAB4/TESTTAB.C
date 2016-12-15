@@ -12,10 +12,11 @@
 *           mmq - Matheus de Mello Queiroz
 *			fpf - Felipe Pessoa de Freitas
 *			mcs - Maria Carolina Santos
-*			gbh - Gustavo Azevedo
+*			gbha - Gustavo Azevedo
 *
-*  $HA HistÛrico de evoluÁ„o:
-*     Vers„o  Autor      Data     ObservaÁıes
+*  $HA Histórico de evolução:
+*     Versão  Autor    Data     Observações
+*	  5 	  mcs	15/dez/2016	mudanças para t4
 *     4        fpf   04/out/2016  desenvolvimento de testes
 *     3        mmq   04/out/2016  desenvolvimento de testes
 *     2        fpf   02/out/2016  implementaÁ„o do esqueleto
