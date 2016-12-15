@@ -1,1 +1,0 @@
-TRAB3-2.exe PecasTabuleiro.txt
