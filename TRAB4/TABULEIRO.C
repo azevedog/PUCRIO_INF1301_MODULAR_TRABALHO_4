@@ -1307,7 +1307,7 @@ static void AtualizaListas( TAB_tppTabuleiro pTabuleiro )
 		}
 		return TAB_CondRetOK ;
 	}
-
+#endif
 
 
 
