@@ -34,6 +34,12 @@
 
 #include    "Tabuleiro.h"
 
+#ifdef _DEBUG
+	
+#include "CESPDIN.H"
+
+#endif
+
 
 static const char CRIAR_TABULEIRO_CMD         [ ] = "=criarTab"		;
 static const char INSERIR_PECA_CMD            [ ] = "=inserirPeca"	;
@@ -43,6 +49,11 @@ static const char OBTER_PECA_CMD			  [ ] = "=obterPeca"	;
 static const char OBTER_LIS_AMDO_CMD		  [ ] = "=obterLisAmdo"	;
 static const char OBTER_LIS_AMTE_CMD		  [ ] = "=obterLisAmte"	;
 static const char DESTRUIR_TABULEIRO_CMD      [ ] = "=destruirTab"	;
+
+#ifdef _DEBUG
+	#define DETURPAR_TABULEIRO_CMD  "=deturpar"
+	#define VERIFICAR_TABULEIRO_CMD "=verificar"            
+#endif
 
 
 #define TRUE  1
@@ -105,6 +116,12 @@ TST_tpCondRet TST_EfetuarComando( char * ComandoTeste )
 
 	char   pCor;
 	char * pNome;
+
+	#ifdef _DEBUG
+		int tipoDeturpacao;
+		int numErros;
+		int errosEsperados;
+	#endif
 
 	/* TAB  &Criar tabuleiro */
 
@@ -297,12 +314,55 @@ TST_tpCondRet TST_EfetuarComando( char * ComandoTeste )
 				return TST_CondRetParm ;
 			} /* if */
 
+			#ifdef _DEBUG
+				CED_InicializarIteradorEspacos();
+				while( CED_ExisteEspacoCorrente() != 0){
+					CED_ExcluirEspacoCorrente();
+				}
+			#endif
+
 			CondRet = TAB_DestruirTabuleiro( &vtTabuleiros[inxTab] );
 
 			return TST_CompararInt( CondRetEsp , CondRet ,
 					"Condicao de retorno errada ao destruir tabuleiro." ) ;
 
 		} /* fim ativa: TAB  &Destruir tabuleiro */
+
+/* Testar TAB deturpar tabuleiro */
+#ifdef _DEBUG
+		/* Realizar deturpacao */
+        else if ( strcmp( ComandoTeste , DETURPAR_TABULEIRO_CMD  ) == 0 ) {
+
+            NumLidos = LER_LerParametros( "ii" , &inxTab, &tpDeturpacao) ;
+
+            if ( NumLidos != 2 )
+            {
+               return TST_CondRetParm ;
+            } /* if */
+
+			return TST_CompararInt( PIL_CondRetOK , PIL_Deturpa(&vtTabuleiros[inxTab], tpDeturpacao),
+                     "Erro ao deturpar."  ) ;
+
+        } /* fim ativa: Realizar deturpacao */
+
+		/* Realizar verificao estrututral */
+        else if ( strcmp( ComandoTeste , VERIFICAR_TABULEIRO_CMD  ) == 0 ) {
+
+			NumLidos = LER_LerParametros( "ii" , &inxTab, &errosEsperados) ;
+
+            if ( NumLidos != 2 )
+            {
+               return TST_CondRetParm ;
+            } /* if */
+           
+			PIL_Verifica( &vtTabuleiros[inxTab], &numErros );
+
+            return TST_CompararInt( errosEsperados , numErros ,
+                     "Total de erros errado ao verificar estrutura."  ) ;
+		}
+
+#endif
+
 
 		
 
