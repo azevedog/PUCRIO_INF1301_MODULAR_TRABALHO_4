@@ -8,7 +8,7 @@
 *  Letras identificadoras:      CED
 *
 *  Nome da base de software:    Arcabouço para a automação de testes de programas redigidos em C
-*  Arquivo da base de software: D:\AUTOTEST\PROJETOS\ARCABOUC.BSW
+*  Arquivo da base de software: C:\AUTOTEST\PROJETOS\INSTRUM.BSW
 *
 *  Projeto: INF 1301 / 1628 Automatização dos testes de módulos C
 *  Gestor:  LES/DI/PUC-Rio
@@ -16,32 +16,30 @@
 *
 *  $HA Histórico de evolução:
 *     Versão  Autor    Data     Observações
-*     5       avs   18/mai/2008 corrigir e ampliar CESPDIN
 *     4       avs   01/fev/2006 criar linguagem script simbólica
 *     3       avs   08/dez/2004 uniformização dos exemplos
 *     2       avs   07/jul/2003 unificação de todos os módulos em um só projeto
 *     1       avs   16/abr/2003 início desenvolvimento
 *
 *  $ED Descrição do módulo
-*     O módulo de instrumentação CESPDIN disponibiliza um conjunto de
+*     O módulo de instrumentação CNTESPAC disponibiliza um conjunto de
 *     funções para
 *     - controlar a extravasão de espaços de dados alocados ao usuário
 *     - controlar o acesso a espaços já desalocados
-*     - controlar a consistência entre o tipo implícito de um ponteiro e o
+*     - controlar a consistência entre o tipo implicito de um ponteiro e o
 *       tipo do espaço por ele apontado
 *     - controlar o vazamento de memória
 *     - simular ter-se atingido o limite de memória disponível
-*     - gerar aleatoriamente a falta de memória
 *     - controlar a integridade da estrutura de espaços de dados dinâmicos
 *     - exibir o conteçudo de espaços de dados em formato hexadecimal
 *
 *  $EIU Interface com o usuário pessoa
 *     Para fazer com que um determinado módulo tenha todos os usos de
-*     malloc, calloc, _msize e free controlados, basta incluir o módulo de
-*     definição deste módulo. Idealmente use uma construção similar a:
+*     malloc e free controlados, basta incluir o módulo de definição
+*     deste módulo. Idealmente use uma construção similar a:
 *
 *     #ifdef _DEBUG
-*        #include "cespdin.h"
+*        #include "cntespac.h"
 *     #endif
 *
 *     Isto fará com que todas as chamadas malloc e free do módulo controlado
@@ -49,38 +47,26 @@
 *     pelo presente módulo.
 *
 *     Para possibilitar a remoção automática da instrumentação
-*     circunde todos os usos de funções desse módulo porventura existentes
-*     no módulo a testar com o comando de compilação condicional
-*
-*     #ifdef _DEBUG
-*        chamadas a funócões de CESPDIN
-*     #endif
-*
-*     Se corretamente codificado a recompilação do módulo instrumentado
-*     sem o nome _DEBUG definido deveria resultar em zero erros de
-*     compilação.
-*
-*     OBSERVAÇÃO: Antes de recompilar, destrua o correspondente módulo objeto,
-*     para que o make não o encontre durante a reconstrução do construto.
+*     circunde todos os usos de funções desse módulo com o
+*     comando de compilação condicional #ifdef _DEBUG
+*     A recompilação do módulo instrumentado sem o nome _DEBUG
+*     definido deveria resultar em zero erros de compilação.
+*     Antes de recompilar destrua o correspondente módulo objeto.
 *
 *     Para o correto funcionamento das funções desse módulo, é necessário
-*     que o módulo CESPDIN contenha um comando similar a:
+*     que contenha o comando:
 *
 *     #pragma pack (1)
 *
-*     existente no Visual Studio C/C++. Esse comando introduz dependências
-*     de plataforma, tornando não portátil o módulo CESPDIN.
+*     Esse comando pode introduzir dependências de plataforma,
+*     tornando o módulo não portátil. Nesse caso remova o comando
+*     #pragma e faça os ajustes necessários nas massas de teste e no
+*     presente módulo de modo que se torne operacional na plataforma
+*     desejada.
 *
-*     Ao mover para outra plataforma de desenvolvimento, procure
-*     documentação sobre a forma com que esta plataforma aloca espaços,
-*     em particular como alinha os espaços. Após faça os ajustes necessários,
-*     até no struct que contém o espaço efetivamente alocado (espaço
-*     instrumentado) de modo que satisfaça as regras de alinhamento da
-*     nova plataforma.
-*
-*     Em geral, os sintomas de mau funcionamento após a remoção de #pragma
-*     são pequenas, de maneira geral circunscritas a extravasões de espaço
-*     passarem despercebidas pela instrumentação.
+*     Em geral, o sintoma de mal funcionamento após a remoção de #pragma
+*     é pequenas extravasões de espaço passarem despercebidas pela
+*     instrumentação.
 *
 ***************************************************************************/
  
@@ -89,6 +75,10 @@
 #else
    #define CESPDIN_EXT extern
 #endif
+
+/***** Declarações exportadas pelo módulo *****/
+
+#define     CED_PONTEIRO_NULO       -2
 
 
 /***********************************************************************
@@ -124,8 +114,9 @@
 *     A função deve ser chamada uma única vez, antes de qualquer outra função
 *     do módulo.
 *     Sugere-se que seja chamada ao iniciar o teste do módulo controlado.
-*
-*     OBS. O módulo de teste genérico faz esta inicialização sempre.
+*     O interpretador de comandos de controle de espaços dinâmicos
+*     provê o comando de teste  =inicializarespacos  que chama a presente
+*     função.
 *
 *  $EP Parâmetros
 *     $P pArqLogParm - ponteiro para o arquivo log de teste. Não pode ser nulo.
@@ -137,26 +128,34 @@
 
 /***********************************************************************
 *
-*  $FC Função: CED  &Alocar espaço malloc
+*  $FC Função: CED  &Alocar espaço
 *
 *  $ED Descrição da função
-*     Nos módulos controlados esta função instrumenta a função "malloc".
-*     A instrumentação é transparente para o módulo controlado,
-*     basta que inclua o módulo de definição CESPDIN.H.
-*     Ou seja, se o módulo de definição "CESPDIN.H" for incluido,
-*     a presente função será utilizada ao chamar "malloc" dentro de algum
-*     módulo cliente. Não sendo incluido "CESPDIN.H", será chamada
-*     diretamente a função "malloc" padrão de C.
+*     Nos módulos controlados esta função substitui a função "malloc".
+*     A susbtituição é transparente para o módulo controlado,
+*     basta que inclua o módulo de controle de acesso a espaços de dados
+*     dinâmicos. Ou seja, se o módulo de definição "Cntespac.h" for
+*     incluido, a presente função será utilizada ao chamar "malloc"
+*     dentro do módulo cliente. Não sendo incluido "Cntespac.h", será
+*     chamada a função "malloc" padrão de C.
+*
+*     O espaço será alocado com controle somente se o módulo de controle
+*     de espaço dinâmico tiver sido inicializado, ver comando de teste
+*
+*         =inicializarespacos     e a correspondente função.
+*
+*     Desta forma pode-se restringir o controle somente aos módulos
+*     sob teste.
 *
 *     O valor (parte útil do espaço alocado) é inicializado para o
 *     caractere '|', permitindo a verificação de se o valor foi
-*     corretamente inicializado ou não após à inicialização a ser realizada
-*     pela função cliente.
+*     corretamente inicializado ou não após à inicialização na função
+*     cliente.
 *
 *     Para assegurar transparência é definida a macro CED_MALLOC
 *     que providencia os argumentos linha e arquivo fonte. Estes, por sua
-*     vez, permitem identificar onde o espaço foi alocado, facilitando
-*     resolver eventuais problemas de vazamento de memória
+*     vez, permitem identificar onde o espaço foi alocado, facilitando,
+*     assim, resolver eventuais problemas de vazamento de memória
 *     e/ou de uso incorreto de espaços.
 *
 *     A função aloca um "struct" contendo diversos controles além do
@@ -164,9 +163,6 @@
 *     espaço que seria alocado pela função de biblioteca "malloc".
 *     O ponteiro retornado aponta para o campo valor, tornando
 *     transparente o fato de se utilizar "malloc" ou esta função.
-*     Cabe salientar que o comportamento anômalo com e sem sintrumentação
-*     variam sensivelmente quando se instrumenta ou não as achamadas
-*     a "malloc".
 *
 *     A função pode simular o esgotamento de memória. Para isto é necessário
 *     estabelecer um limite através de uma das funções a isto destinadas.
@@ -174,10 +170,6 @@
 *     total de espaço já alocado acrescido do espaço solicitado for maior
 *     do que o limite estabelecido, a função não aloca espaço e retorna NULL,
 *     simulando falta de memória.
-*
-*     A função pode simular esgotamento aleatório de memória. Para isto
-*     é necessário estabelecer a freqüência de NULLs simulados, veja o
-*     comando =limitarfrequencia em INTRPCED.C
 *
 *     Consulte as funções CED_Limitar... para detalhes das formas de
 *     limite que podem ser estabelecidas.
@@ -196,8 +188,8 @@
 *
 *  $EIU Interface com usuário pessoa
 *     Ao invés de utilizar a função CED_Malloc utilize a macro CED_MALLOC
-*     uma vez que esta fornece automaticamente a identificação do local
-*     em que foi realizada a chamada.
+*     uma vez que esta fornece automáticamente a identificação do local
+*     onde foi realizada a chamada.
 *
 ***********************************************************************/
 
@@ -211,59 +203,22 @@
 
 /***********************************************************************
 *
-*  $FC Função: CED  &Alocar espaço todo zerado calloc
-*
-*  $ED Descrição da função
-*     Aloca um espaço de Tamanho bytes todos iguais a \0.
-*     Utiliza a função CED_Malloc. Veja a documentação desta.
-*
-***********************************************************************/
-
-   #define  CED_CALLOC( Tamanho ) \
-               CED_Calloc( Tamanho , __LINE__ , __FILE__ )
-
-   void * CED_Calloc( size_t Tamanho ,
-                      int    numLinhaFonte ,
-                      char * NomeArquivoFonte ) ;
-
-
-/***********************************************************************
-*
-*  $FC Função: CED  &Realocar espaço alocado realloc
-*
-*  $ED Descrição da função
-*     A função realloc de C/C++ não é implementada pelo módulo CESPDIN.
-*     De maneira geral também é recomendado que não seja utilizada,
-*     uma vez que pode mudar o valor do ponteiro. Isso pode provocar
-*     problemas caso um espaço seja referenciado por mais de um ponteiros.
-*
-*     A interface é similar à de CED_Malloc.
-*
-***********************************************************************/
-
-   #define  CED_REALLOC( Tamanho ) \
-               CED_Realloc( Tamanho , __LINE__ , __FILE__ )
-
-   void * CED_Realloc( size_t Tamanho ,
-                       int    numLinhaFonte ,
-                       char * NomeArquivoFonte ) ;
-
-
-/***********************************************************************
-*
 *  $FC Função: CED  &Desalocar espaço
 *
 *  $ED Descrição da função
 *     Elimina o elemento da lista de controle. Todos os bytes são tornados
-*     iguais a 'x'. O identificador do tipo do espaço também
+*     iguais a '!' (x21). O identificador do tipo do espaço também
 *     é destruído, possibilitando verificar se ele ainda está alocado.
 *
-*     Ao usar esta função deve-se tomar o cuidado de nunca usar free para
-*     desalocar um espaço controlado por este módulo.
-*     Ou seja, evite o uso de malloc e free em módulos distintos em
-*     que malloc está num módulo controlado e free não.
-*     O mais seguro é ou ter todos os módulos que manipulam uma determinada
-*     estrutura de dados sob controle, ou ter nenhum.
+*     Ao usar esta função deve-se tomar os seguintes cuidados:
+*     - nunca use esta função para desalocar um espaço que não esteja sob
+*       controle deste módulo. Ou seja, evite o uso de malloc e free em
+*       módulos distintos em que malloc não é controlado e free é.
+*     - nunca use free para desalocar um espaço controlado por este módulo.
+*       Ou seja, evite o uso de malloc e free em módulos distintos em
+*       que malloc é controlado e free não é.
+*
+*     O mais seguro é ou ter todos os módulos sob controle, ou ter nenhum.
 *
 *  $EP Parâmetros
 *     $P Ponteiro - ponteiro para o campo valor (espaço útil) do espaço
@@ -299,9 +254,6 @@
 *     Exibe todos os espaços que satisfazem uma determinada regra.
 *     Ver o tipo CED_tpModoExibir para uma explicação quanto às regras
 *     de seleção de espaços a exibir.
-*        CED_ExibirTodos     - exibe todos os espaços
-*        CED_ExibirAtivos    - exibe os espaços marcados ativos
-*        CED_ExibirInativos  - exibe os espaços marcados não ativos
 *
 ***********************************************************************/
 
@@ -332,12 +284,14 @@
 *     e o tipo que o espaço de fato contém.
 *
 *     Sugere-se que o desenvolvedor da aplicação crie uma tabela global
-*     contendo um "enum" com os nomes de todos os tipos ('typedef struct')
-*     que podem ser utilizados como declaradores de espaços dinâmicos.
-*     O embrião da tabela existe em: arcabouc\tabelas\idTiposEspaco.def
+*     contendo um "enum" com os nomes de todos os tipos ('typedef struct') que
+*     podem ser utilizados como declaradores de espaços dinâmicos.
+*     Ao definir o tipo, pode-se, agora, utilizar o nome correspondente
+*     ao tipo do espaço alocado como o idTipo a ser definido. Veja
+*     as explicações no arquivo IdTiposEspaco.def
 *
 *     O presente sistema de controle de tipos não prevê mecanismos para
-*     tratamento de herança.
+*     tratamentoi de herança.
 *
 *  $EP Parâmetros
 *     $P Ponteiro - ponteiro para o campo valor (espaço útil) do espaço
@@ -365,15 +319,9 @@
 *     A marca ativo/não ativo é utilizada para apoiar o controle de
 *     vazamento de memória. Siga o seguinte roteiro:
 *     - Marque todos os espaços não ativos.
-*     - A partir das âncoras, percorra as estruturas ativas marcando
-*       ativos os espaços visitados. Este percorrimento é recursivo.
-*       Retorna-se da chamada se encontrar um espaço já marcado ativo, ou
-*       se não tiver para onde caminhar. Note que para poder fazer isto
-*       é necessário conhecer-se o tipo dos dados contidos em cada um
-*       dos espaços alocados.
-*     - Percorra a lista de todos os espaços verificando se cada espaço
-*       visitado é ou não inativo. Os não ativos provavelmente correspondem
-*       a vazamento de memória.
+*     - Percorra as estruturas ativas marcando ativos os espaços visitados.
+*     - Percorra a lista de todos os espaços verificando se cada espaço visitado
+*       é ou não inativo.
 *
 *  $EP Parâmetros
 *     $P Ponteiro - ponteiro para o campo valor (espaço útil) do espaço
@@ -407,8 +355,6 @@
 *  $ED Descrição da função
 *     Percorre todos os espaços alocados marcando-os inativos.
 *
-*     Veja: CED_MarcarEspacoAtivo
-*
 ***********************************************************************/
 
    void CED_MarcarTodosEspacosInativos( ) ;
@@ -419,9 +365,8 @@
 *  $FC Função: CED  &Limitar memória disponível
 *
 *  $ED Descrição da função
-*     Estabelece um limite de memória disponível.
-*     A função CED_Malloc retornará NULL caso a adição do espaço solicitada
-*     adicionada ao total útil já alocado ultrapassar o limite estabelecido.
+*     Estabelece um limite de memória disponível. Este limite afeta
+*     o comportamento da função CED_Malloc.
 *
 *     Embora a função possa ser chamada a qualquer momento, recomenda-se
 *     que seja chamada antes do primeiro caso de teste capaz de alocar
@@ -463,36 +408,6 @@
 
 /***********************************************************************
 *
-*  $FC Função: CED  &Limitar com freqüência de geração de NULL
-*
-*  $ED Descrição da função
-*     Esta função estabelece a freqüência com a qual não deverá ser
-*     gerado NULL, o complemento a esta freqüência é a frequüência com
-*     a qual deverá ser retornado NULL (não aloca) independentemente da
-*     existência ou não de memória disponível.
-*     A função visa apoiar a verificação de se o comportamento de um
-*     programa leva em conta os retornos de falta de memória.
-*
-*  $EP Parâmetros
-*     $P Frequencia - é um inteiro 10 <= Frequencia < 1000 e que indica
-*                     a freqüência em cada 1000 alocações em que memória
-*                     será alocada. Exemplo: para que 95% das vezes
-*                     ocorra alocação, forneça o parâmetro 950, já se for
-*                     desejado que ocorra em 99,9% das vezes, forneça
-*                     999. Se zero, não será realizada a simulação de
-*                     falta de memória.
-*
-*  $FV Valor retornado
-*     TRUE   se tiver sido estabelecido o limite por freqüência
-*     FALSE  se tiver ocorrido algum erro
-*
-***********************************************************************/
-
-   int CED_LimitarFrequencia( int Frequencia ) ;
-
-
-/***********************************************************************
-*
 *  $FC Função: CED  &Limitar, eliminar limites
 *
 *  $ED Descrição da função
@@ -509,18 +424,12 @@
 *
 *  $ED Descrição da função
 *     Retorna o identificador do tipo do espaço apontado.
+*     Será CED_ID_TIPO_ESPACO_NULO se nunca foi atribuído um tipo ao espaço
+*     e será CED_ID_TIPO_ILEGAL se o espaço já havia sido liberado.
 *
 *  $EP Parâmetros
 *     $P Ponteiro - ponteiro para o campo valor (espaço útil) do espaço
 *                   do qual se deseja saber o tipo
-*
-*  $FV Valor retornado
-*     Tipo do valor retornado, cajo tenha sido definido, ou um dos valores:
-*
-*        CED_ID_TIPO_ESPACO_NULO  se nunca foi atribuído um tipo ao espaço
-*        CED_ID_TIPO_ILEGAL       se o espaço não corresponder a um espaço
-*                                 controlado pelo módulo CESPDIN
-*        CED_ID_TIPO_NULL         se o parâmetro Ponteiro for NULL
 *
 ***********************************************************************/
 
@@ -545,22 +454,10 @@
 
 /***********************************************************************
 *
-*  $FC Função: CED  &Obter tamanho do espaço alocado _msize
-*
-*  $ED Descrição da função
-*     Implementa a função _msize disponível no Visual Studio C/C++
-*
-***********************************************************************/
-
-   size_t CED_Msize( void * Ponteiro ) ;
-
-
-/***********************************************************************
-*
 *  $FC Função: CED  &Obter número de espaços alocados
 *
 *  $ED Descrição da função
-*     Retorna o número de elementos da lista de espaços alocados
+*     Retorna o número de espaços contidos na lista de espaços alocados
 *
 ***********************************************************************/
 
@@ -582,27 +479,7 @@
 
 /***********************************************************************
 *
-*  $FC Função: CED  &Obter número total de NULLs gerados
-*
-*  $ED Descrição da função
-*     Retorna o número de NULLs retornados em virtude de limitações impostas.
-*     Veja as funções CED_LimitarXXX
-*
-***********************************************************************/
-
-   long CED_ObterNumNULL( void ) ;
-
-
-/***********************************************************************
-*
 *  $FC Função: CED  &Obter número de espaços segundo regra
-*
-*  $ED Descrição da função
-*     Obtém o número de elementos contidos na lista de espaços alocados,
-*     segundo a regra:
-*        CED_ExibirTodos     - exibe todos os espaços
-*        CED_ExibirAtivos    - exibe os espaços marcados ativos
-*        CED_ExibirInativos  - exibe os espaços marcados não ativos
 *
 ***********************************************************************/
 
@@ -614,7 +491,7 @@
 *  $FC Função: CED  &Obter espaço total alocado
 *
 *  $ED Descrição da função
-*     Obtém o total, em bytes, de espaços úteis alocados.
+*     Obtém o total em bytes de espaços úteis alocados.
 *
 ***********************************************************************/
 
@@ -628,19 +505,6 @@
 *  $ED Descrição da função
 *     Inicia o iterador com o primeiro espaço da lista de controle de espaços
 *     dinâmicos.
-*
-*     O iterador pode ser utilizado para verificar a integridade dos
-*     espaços de dados sob controle do módulo. Para isto a função de
-*     verificação de espaços deve percorrer todos os espaços alocados
-*     disparando o controle individual para cada um deles.
-*
-*     Pode-se também simular um garbage collector, percorrendo todos
-*     os espaços e marcá-los inativos. Depois percorrer, a partir
-*     das âncoras, todos os espaços adjacentes, marcando ativos os
-*     espaços visitados. Evidentemente se já estiver marcado ativo
-*     retorna-se para tratar do próximo estado pendente na pilha.
-*     Ao final, os espaços que ainda estiverem marcados inativos
-*     correspondem a vazamento de memória.
 *
 ***********************************************************************/
 
@@ -681,8 +545,6 @@
 *
 *  $ED Descrição da função
 *     Verifica se o iterador referencia um espaço corrente.
-*     Caso retorne FALSE, o iterador chegou ao final da lista de espaços
-*     ou, então, ainda não foi inicializado.
 *
 ***********************************************************************/
 
@@ -694,8 +556,7 @@
 *  $FC Função: CED  &Iterador: terminar iterador
 *
 *  $ED Descrição da função
-*     Desativa o iterador. A referência para o espaço corrente passa
-*     a ser NULL.
+*     Desativa o iterador. Deixa de existir a referência para o espáco corrente.
 *
 ***********************************************************************/
 
@@ -709,11 +570,8 @@
 *  $ED Descrição da função
 *     Elimina o espaço corrente da lista de espaços controlados.
 *     O espaço é liberado tornando ilegais todos os acessos realizados
-*     por funções do usuário.
-*     Na realidade esta função corresponde a um CED_Free.
-*     Utilize esta função somente para para eliminar espaços sabidamente
-*     inativos, ou para deturpar ao testar reações a anomalias em estruturas
-*     de dados.
+*     por funções do usuário. Utilize esta função somente para deturpar, ou
+*     para eliminar espaços sabidamente inativos.
 *
 ***********************************************************************/
 
@@ -743,31 +601,27 @@
 *  $ED Descrição da função
 *     Verifica a integridade de um determinado espaço de dados.
 *     Retorna o número de falhas encontradas.
-*     Esta função pode levar a um cancelamento do programa, caso o
-*     espaço de dados esteja danificado, ou o ponteiro não aponte
-*     para um espaço controlado.
+*     Esta função pode levar a um cancelamento por erro, caso o ponteiro
+*     fornecido esteja errado.
 *
 *  $EP Parâmetros
 *     $P Ponteiro para a porção útil do espaço. Este é o ponteiro
 *                 retornado pela função CED_Malloc
-*
 *     $P int pVerificarValor( void * pValor )
 *                 função fornecida pelo cliente para verificar a corretude
 *                 do espaço útil. A função recebe como parâmetro um
-*                 ponteiro para o espaço a verificar e deve retornar
-*                      0  FALSE  caso o espaço não esteja correto e
-*                   != 0  TRUE   se estiver correto.
-*                 Todas as mensagens de erro devem ser dadas
+*                 ponteiro para o espaço a verificar e retorna
+*                 0 caso o espaço não esteja correto e != 0 se estiver
+*                 correto. Todas as mensagens de erro devem ser dadas
 *                 pela função de verificação. Procure utilizar as
-*                 funções do módulo GENERICO para exibir as mensagens
+*                 funções do módulo TESTEGEN para exibir as mensagens
 *                 e realizar as comparações.
 *                 Caso não deseje verificar o valor, forneça NULL como
 *                 argumento.
 *
 *  $FV Valor retornado
 *     TRUE   se espaço é válido ou o ponteiro for NULL
-*     FALSE  se não for um espaço controlado pelo módulo CESPDIN, ou
-*            se o conteúdo do espaço total não for válido
+*     FALSE  caso contrário
 *
 ***********************************************************************/
 
@@ -782,13 +636,12 @@
 *  $ED Descrição da função
 *     Percorre toda a lista, verificando um a um os espaços.
 *     Caso um ou mais espaços estejam errados, pode ocorrer
-*     cancelamento da execução em virtude de acesso ilegal a memória.
+*     cancelamento da execução em virtude de acesso a memória ilegal.
 *
 *  $EP Parâmetros
 *     $P pVerificarValor - é o ponteiro para uma função que verifica o conteúdo
 *                          do espaço útil. O parâmetro pValor dessa função
-*                          apontará para o valor a ser controlado.
-*                          Se NULL não verifica o espaço útil.
+*                          apontará para o valor a ser controlado
 *
 *  $FV Valor retornado
 *     TRUE   se todos os espaços estão válidos
@@ -803,11 +656,8 @@
 /* Código final do módulo */
 
 #if !defined( CESPDIN_OWN )
-   #define    malloc     CED_MALLOC
-   #define    calloc     CED_CALLOC
-   #define    realloc    CED_REALLOC
-   #define    free       CED_Free
-   #define    _msize     CED_Msize
+   #define malloc CED_MALLOC
+   #define free   CED_Free
 #endif
 
 #undef CESPDIN_EXT

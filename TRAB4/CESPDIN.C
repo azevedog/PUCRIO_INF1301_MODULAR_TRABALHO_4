@@ -1,102 +1,112 @@
 /***************************************************************************
-*  $MCI Módulo de implementação: CED  Controlador de espaços de dados alocados dinamicamente
 *
-*  Arquivo gerado:              CESPDIN.c
-*  Letras identificadoras:      CED
+*  M¢dulo de implementa‡„o: CED  Controlador de espaços de dados alocados dinamicamente
 *
-*  Nome da base de software:    Arcabouço para a automação de testes de programas redigidos em C
-*  Arquivo da base de software: D:\AUTOTEST\PROJETOS\ARCABOUC.BSW
+*  Arquivo gerado:          CESPDIN.c
+*  Letras identificadoras:  CED
+*  N£mero identificador:    
 *
-*  Projeto: INF 1301 / 1628 Automatização dos testes de módulos C
-*  Gestor:  LES/DI/PUC-Rio
-*  Autores: avs
+*  Nome l¢gico da base:  Arcabouço para a automação de testes de programas redigidos em C
+*  Nome do arquivo base: D:\AUTOTEST\PROJETOS\ARCABOUC.BSW
 *
-*  $HA Histórico de evolução:
-*     Versão  Autor    Data     Observações
-*     5       avs   18/mai/2008 corrigir e ampliar CESPDIN
+*     INF 1301 / 1628 Automatização dos testes de módulos C
+*  Direitos autorais da base
+*     LES/DI/PUC-Rio
+*
+*  Estado corrente de distribui‡„o da base
+*     Vers„o: 2    Modifica‡„o:      Altera‡„o:      Data libera‡„o: 
+*
+*     Autorizou libera‡„o     
+*
+*  Hist¢rico do projeto
+*     Vers Modf Altr  Autor    Data     Observa‡”es
 *     4       avs   01/fev/2006 criar linguagem script simbólica
 *     3       avs   08/dez/2004 uniformização dos exemplos
 *     2       avs   07/jul/2003 unificação de todos os módulos em um só projeto
 *     1       avs   16/abr/2003 início desenvolvimento
+*  Altera‡”es de emergˆncia realizadas e ainda n„o passadas a limpo
+*  Altera‡”es e corre‡”es realizadas
 *
 ***************************************************************************/
 
-#include    <malloc.h>
-#include    <stdio.h>
-#include    <memory.h>
-#include    <string.h>
+/******************* Declara‡”es encapsuladas do m¢dulo *******************/
 
-#define CESPDIN_OWN
-#include "CESPDIN.h"
-#undef CESPDIN_OWN
+   /****** Inclus”es utilizadas pelo m¢dulo ******/
 
-#include    "Generico.h"
-#include    "GeraAlt.h"
+   #include    <malloc.h>
+   #include    <stdio.h>
+   #include    <memory.h>
+   #include    <string.h>
 
-#include    "..\tabelas\IdTiposEspaco.def"
+   /****** Inclus„o do m¢dulo de defini‡„o pr¢prio ******/
 
-    /* O pragma é necessário para assegurar alinhamento a byte,
-       uma vez que toda a aritmética com ponteiros assume isso */
+   #define CESPDIN_PROPRIO
+   #include "CESPDIN.h"
+   #undef CESPDIN_PROPRIO
 
-#pragma pack (1)
+   /****** Declara‡”es internas ao m¢dulo ******/
 
-#define     DIM_NOME_ARQ_FONTE  32
-#define     DIM_PONTEIRO         4
+   #include    "Generico.h"
+   #include    "GeraAlt.h"
 
-#define     TIPO_MSG_INFO     "!!!"
-#define     TIPO_MSG_ERRO     "ed>"
-#define     TIPO_MSG_VAZIA    "   "
+   #include    "..\tabelas\IdTiposEspaco.def"
 
-#define     CHAR_ALOC      '|'
-#define     CHAR_DESALOC   '?'
+       /* O pragma é necessário para assegurar alinhamento a byte,
+          uma vez que toda a aritmética com ponteiros assume isso */
 
-#define     LIMITE_FREQUENCIA      1000
-#define     LIMITE_INF_FREQUENCIA    10
-#define     LIMITE_SUP_FREQUENCIA  1000
+   #pragma pack (1)
 
-/* Controle do conteúdo do espaço alocado
-*
-* Ao serem alocados, a parte Valor dos espaços é inicializados para
-* CHAR_ALOC ("|"). Ao serem desalocados, os espaço todo é preenchido
-* com CHAR_DESALOC ("?"). Isto permite verificar o estado do espaço
-* ao acessá-lo. O objetivo é provocar erros sistemáticos caso um
-* programa tente utilizar espaços desalocados, ou se esqueça de
-* inicializar campos que contenha ponteiros.
-*/
+   #define     DIM_NOME_ARQ_FONTE  32
+   #define     DIM_PONTEIRO         4
 
-#define     DIM_VALOR      2
-#define     DIM_CONTROLE   2
-#define     CONTROLE       "\x96\xC3"
-#define     CONTROLE_ERRO  "\x02\0"
+   #define     TIPO_MSG_INFO     "!!!"
+   #define     TIPO_MSG_ERRO     "ee>"
+   #define     TIPO_MSG_VAZIA    "   "
 
-/* Todos os espaços são antecedidos e sucedidos por strings constantes
-* de controle (CONTROLE). Isto permite verificar se houve extravasão
-* ao transferir dados para o espaço.
-* O CONTROLE_ERRO é inserido após quando o espaço for liberado.
-* Procura evitar que strings possam extravasar o espaço disponível.
-*/
+   #define     CHAR_ALOC      '|'
+   #define     CHAR_DESALOC   '?'
 
-#define     ESPACO_NULL        0x98FB5D32L
+   #define     LIMITE_FREQUENCIA      1000
+   #define     LIMITE_INF_FREQUENCIA    10
+   #define     LIMITE_SUP_FREQUENCIA  1000
 
-/* Ao dar free o primeiro long é tornado igual a zero
-*  Este valor indica que ainda não ocorreu um free no espaço
-*/
+   /* Controle do conteúdo do espaço alocado
+   *
+   * Ao serem alocados, a parte Valor dos espaços é inicializados para
+   * CHAR_ALOC ("`"). Ao serem desalocados, os espaço todo é preenchido
+   * com CHAR_DESALOC ("!"). Isto permite verificar o estado do espaço
+   * ao acessá-lo. O objetivo é provocar erros sistemáticos caso um
+   * programa tente utilizar espaços desalocados, ou se esqueça de
+   * inicializar campos que contenha ponteiros.
+   */
 
-#define     IMPRESSAO_DIGITAL  0xC07146AEL
+   #define     DIM_VALOR      2
+   #define     DIM_CONTROLE   2
+   #define     CONTROLE       "\x96\xC3"
+   #define     CONTROLE_ERRO  "\x01\0"
 
-/* Todos os espacos de dados teem esta marca digital.
-* Isto permite assegurar que se trata de um espaço controlado.
-* O que, por sua vez permite misturar módulos instrumentados
-* com módulos não instrumentados sem que ocorram erros
-* de processamento que acabam levando ao cancelamento do programa
-*/
+   /* Todos os espaços são antecedidos e sucedidos por strings constantes
+   * de controle (CONTROLE). Isto permite verificar se houve extravasão
+   * ao transferir dados para o espaço.
+   */
+
+   #define     IMPRESSAO_DIGITAL  3141593526
+
+   /* Todos os espacos de dados teem esta marca digital.
+   * Isto permite assegurar que se trata de um espaço controlado.
+   * O que, por sua vez permite misturar módulos instrumentados
+   * com módulos otimizados (não instrumentados) sem que ocorram erros
+   * de processamento que acabam levando ao cancelamento do programa
+   */
+
+   /***** Tipos de dados internos ao m¢dulo *****/
 
 /***********************************************************************
 *
-*  $TC Tipo de dados: CED Elemento da lista de controle de espaços de dados
+*  Tipo de dados: CED Elemento da lista de controle de espaços de dados
 *
+*  Descri‡„o do tipo
 *
-*  $ED Descrição do tipo
 *     Esta estrutura define a organização de um espaço de dados
 *     alocado pelo controlador de vazamento.
 *     O elemento prevê campos para a identificação do tipo do espaço de
@@ -105,164 +115,148 @@
 *
 ***********************************************************************/
 
-   typedef struct tgElemListaControle {
+      typedef struct tgElemListaControle {
 
-         unsigned long EspacoNULL ;
-               /* Espaço para o NULL */
+      /* Estrutura de dados : Raiz de CED Elemento da lista de controle de espaços de dados */
 
-         unsigned long ImpressaoDigital ;
-               /* Marcador de espaço controlado
-               *
-               *$ED Descrição
-               *   O valor contido neste marcador é sempre o mesmo.
-               *   Tem por objetivo servir de um identificador de que o espaço de dados
-               *   corresponde a um espaço controlado.
-               *   Caso não exista as operações de manipulação de espaço controlado são
-               *   inibidas. Isto é particularmente importante para o free,
-               *   uma vez que o espaço a ser liberado poderia ter sido criado
-               *   sem em um módulo que não aloca de forma controlada. */
 
-         int tamTotal ;
-               /* Tamanho total do espaço
-               *
-               *$ED Descrição
-               *   Tem por objetivo estabelecer uma redundância com tamValor. */
+         /* Estrutura de dados : Marcador de espaço controlado */
 
-         struct tgElemListaControle * pAnt ;
-               /* Ponteiro para o elemento anterior na lista de espaços alocados */
+            unsigned long ImpressaoDigital ;
 
-         struct tgElemListaControle * pProx ;
-               /* Ponteiro para o elemento a seguir na lista de espaços alocados */
+         /* Estrutura de dados : Tamanho total do espaço */
 
-         int idEspaco ;
-               /* Identificador do espaço
-               *
-               *$ED Descrição
-               *   Identificador único do espaço alocado */
+            int tamTotal ;
 
-         int ehAtivo ;
-               /* Marca de espaço ativo
-               *
-               *$ED Descrição
-               *   Indica se o espaço é ou não ativo. A marca é estabelecida pelo usuário. */
+         /* Estrutura de dados : Ponteiro para o elemento anterior na lista de espaços alocados */
 
-         int idTipoValor ;
-               /* Identificador do tipo do valor contido no espaço alocado
-               *
-               *$ED Descrição
-               *   O tipo específico do valor contido neste elemento pode ser identificado
-               *   por este atributo. Ao instrumentar um ou mais módulos, o programador
-               *   cliente deve definir um inteiro que esteja em correspondência
-               *   um para um com os diversos tipos de valores que serão alocados
-               *   dinamicamente. Após criar o elemento deve ser atribuído o
-               *   identificador do tipo do valor que será inserido no elemento. */
+            struct tgElemListaControle * pAnt ;
 
-         int tamValor ;
-               /* Dimensão, em bytes, do valor contido no espaço alocado */
+         /* Estrutura de dados : Ponteiro para o elemento a seguir na lista de espaços alocados */
 
-         int numLinhaFonte ;
-               /* Número da linha do código fonte */
+            struct tgElemListaControle * pProx ;
 
-         char NomeArquivoFonte[ DIM_NOME_ARQ_FONTE ] ;
-               /* Nome arquivo fonte
-               *
-               *$ED Descrição
-               *   Os atributos NumLinhaFonte e NomeArquivoFonte identificam o local
-               *   no código fonte na qual a função CED_malloc foi chamada.
-               *   Isto ajuda a identificar a causa dos possíveis problemas de manipulação
-               *   de memória dinâmica encontrados ao executar o módulo controlado. */
+         /* Estrutura de dados : Identificador do espaço */
 
-         char ControleAntes[ DIM_CONTROLE ] ;
-               /* Marcador de controle de extravasão antes do espaço */
+            int idEspaco ;
 
-         char Valor[ DIM_VALOR ] ;
-               /* Dummy a ser substituído pelo espaço a ser ocupado pelo valor */
+         /* Estrutura de dados : Marca de espaço ativo */
 
-         char ControleApos[  DIM_CONTROLE ] ;
-               /* Marcador de controle de extravasão após
-               *
-               *$ED Descrição
-               *   A origem deste atributo varia em função da dimensão do valor
-               *   contido no elemento. Ele é declarado somente para que se
-               *   possa determinar o sizeof do elemento sem contar com o
-               *   espaço requerido pelo valor. */
+            int ehAtivo ;
 
-   } tpElemListaControle ;
+         /* Estrutura de dados : Identificador do tipo do valor contido no espaço alocado */
 
-/*****  Dados encapsulados no módulo  *****/
+            int idTipoValor ;
 
-      #define  TRUE     1
-      #define  FALSE    0
-            /* Constantes lógicas */
+         /* Estrutura de dados : Dimensão, em bytes, do valor contido no espaço alocado */
 
-      static int estaInicializado = FALSE ;
-            /* Controle de inicialização */
+            int tamValor ;
 
-      static tpElemListaControle * pOrgLista = NULL;
-            /* Origem da lista de espaços alocados */
+         /* Estrutura de dados : Número da linha do código fonte */
 
-      static tpElemListaControle * pEspacoCorr = NULL;
-            /* Iterador: espaço corrente
-               *
-               *$ED Descrição
-               *   Aponta para o espaço corrente do iterador.
-               *   Se NULL o iterador não está ativo. */
+            int numLinhaFonte ;
 
-      static long numEspacosAlocados = 0 ;
-            /* Contador de espaços alocados */
+         /* Estrutura de dados : Nome arquivo fonte */
 
-      static long TotalAlocacoes = 0 ;
-            /* Contador do total de chamadas de alocação */
+            char NomeArquivoFonte[ DIM_NOME_ARQ_FONTE ] ;
 
-      static long EspacoTotalAlocado = 0 ;
-            /* Espaço total alocado */
+         /* Estrutura de dados : Marcador de controle de extravasão antes do espaço */
 
-      static long LimiteMemoria = 0 ;
-            /* Limite de memória disponível
-               *
-               *$ED Descrição
-               *   Caso este valor seja maior do que zero, este valor restringe
-               *   o total de memória que pode estar alocado a cada momento. */
+            char ControleAntes[ DIM_CONTROLE ] ;
 
-      static long LimiteNumEspacos = 0 ;
-            /* Limite de número de espaços alocados */
+         /* Estrutura de dados : Dummy a ser substituído pelo espaço a ser ocupado pelo valor */
 
-      static int FrequenciaMalloc ;
-            /* Limite de freqüência estabelecido
-               *
-               *$ED Descrição
-               *   Determina a freqüência de allocações que serão realizadas.
-               *   Deixarão de ser realizadas alocações numa freqüência de
-               *   1 - ( FrequenciaMalloc / LIMITE_FREQUENCIA ) */
+            char Valor[ DIM_VALOR ] ;
 
-      static long ContaNULL ;
-            /* Contagem de NULLs gerados
-               *
-               *$ED Descrição
-               *   Conta o número de vezes que o malloc não foi gerado devido a algum
-               *   limite de alocação simulado. */
+         /* Estrutura de dados : Marcador de controle de extravasão após */
 
-/***** Protótipos das funções encapuladas no módulo *****/
+            char ControleApos[  DIM_CONTROLE ] ;
 
-   static void DesalocarEspaco( tpElemListaControle * pEspaco ) ;
+      } tpElemListaControle ;
 
-   static tpElemListaControle * ObterOrigemElemento( void * Ponteiro ) ;
+   /***** Estruturas de dados internas ao m¢dulo *****/
 
-   static void ExibirCabecalho( char * TipoMsg , tpElemListaControle * pEspaco ) ;
+   /* Estrutura de dados : *CED  Dados globais encapsulados */
 
-   static void ExibirMensagem( char * Msg ) ;
 
-   static int VerificarEspaco( tpElemListaControle * pEspaco ) ;
+      /* Estrutura de dados : Constantes lógicas */
 
-/*****  Código das funções exportadas pelo módulo  *****/
+         #define  TRUE     1
+         #define  FALSE    0
+
+      /* Estrutura de dados : Controle de inicialização */
+
+         static int estaInicializado = FALSE ;
+
+      /* Estrutura de dados : Origem da lista de espaços alocados */
+
+         static tpElemListaControle * pOrgLista = NULL;
+
+      /* Estrutura de dados : Iterador: espaço corrente */
+
+         static tpElemListaControle * pEspacoCorr = NULL;
+
+      /* Estrutura de dados : Contador de espaços alocados */
+
+         static long numEspacosAlocados = 0 ;
+
+      /* Estrutura de dados : Contador do total de chamadas de alocação */
+
+         static long TotalAlocacoes = 0 ;
+
+      /* Estrutura de dados : Espaço total alocado */
+
+         static long EspacoTotalAlocado = 0 ;
+
+      /* Estrutura de dados : Limite de memória disponível */
+
+         static long LimiteMemoria = 0 ;
+
+      /* Estrutura de dados : Limite de número de espaços alocados */
+
+         static long LimiteNumEspacos = 0 ;
+
+      /* Estrutura de dados : Limite de freqüência estabelecido */
+
+         static int FrequenciaMalloc ;
+
+      /* Estrutura de dados : Contagem de NULLs gerados */
+
+         static long ContaNULL ;
+
+   /***** Prot¢tipos de pacotes internos ao m¢dulo *****/
+       
+      static void DesalocarEspaco( tpElemListaControle * pEspaco ) ;
+       
+      static tpElemListaControle * ObterOrigemElemento( void * Ponteiro ) ;
+       
+      static void ExibirCabecalho( char * TipoMsg , tpElemListaControle * pEspaco ) ;
+       
+      static void ExibirMensagem( char * Msg ) ;
+       
+      static int VerificarEspaco( tpElemListaControle * pEspaco ) ;
+
+/********************** C¢digo dos pacotes do m¢dulo **********************/
 
 /***************************************************************************
 *
-*  Função: CED  &Inicializar o controlador de alocação de espaços dinâmicos
-*  ****/
+*  Fun‡„o: CED  &Inicializar o controlador de alocação de espaços dinâmicos
+*
+*  Descri‡„o da fun‡„o
+*     Esta função inicializa o controlador de espaços em memória dinâmica.
+*     A função deve ser chamada uma única vez, antes de qualquer outra função
+*     do módulo.
+*     Sugere-se que seja chamada ao iniciar o teste do módulo controlado.
+*     O interpretador de comandos de controle de espaços dinâmicos
+*     provê o comando de teste  =inicializarespacos  que chama a presente
+*     função.
+*
+***************************************************************************/
 
    void CED_InicializarControlador( void )
    {
+
+   /* Raiz de CED  &Inicializar o controlador de alocação de espaços dinâmicos */
 
       TST_ASSERT( !estaInicializado ) ;
 
@@ -280,21 +274,76 @@
 
       estaInicializado     = TRUE ;
 
-   } /* Fim função: CED  &Inicializar o controlador de alocação de espaços dinâmicos */
+   } /* Fim pacote: Raiz de CED  &Inicializar o controlador de alocação de espaços dinâmicos */
 
 /***************************************************************************
 *
-*  Função: CED  &Alocar espaço malloc
-*  ****/
+*  Fun‡„o: CED  &Alocar espaço
+*
+*  Descri‡„o da fun‡„o
+*     Nos módulos controlados esta função substitui a função "malloc".
+*     A susbtituição é transparente para o módulo controlado,
+*     basta que inclua o módulo de controle de acesso a espaços de dados
+*     dinâmicos. Ou seja, se o módulo de definição "CESPDIN.H" for
+*     incluido, a presente função será utilizada ao chamar "malloc"
+*     dentro do módulo cliente. Não sendo incluido "CESPDIN.H", será
+*     chamada a função "malloc" padrão de C.
+*
+*     O espaço será alocado com controle somente se o módulo de controle
+*     de espaço dinâmico tiver sido inicializado, ver comando de teste
+*
+*         =inicializarespacos     e a correspondente função.
+*
+*     Desta forma pode-se restringir o controle somente aos módulos
+*     sob teste.
+*
+*     O valor (parte útil do espaço alocado) é inicializado para o
+*     caractere '|', permitindo a verificação de se o valor foi
+*     corretamente inicializado ou não após à inicialização na função
+*     cliente.
+*
+*     Para assegurar transparência é definida a macro CED_MALLOC
+*     que providencia os argumentos linha e arquivo fonte. Estes, por sua
+*     vez, permitem identificar onde o espaço foi alocado, facilitando,
+*     assim, resolver eventuais problemas de vazamento de memória
+*     e/ou de uso incorreto de espaços.
+*
+*     A função aloca um "struct" contendo diversos controles além do
+*     espaço útil (valor). O campo valor deste "struct" corresponde ao
+*     espaço que seria alocado pela função de biblioteca "malloc".
+*     O ponteiro retornado aponta para o campo valor, tornando
+*     transparente o fato de se utilizar "malloc" ou esta função.
+*
+*     A função pode simular o esgotamento de memória. Para isto é necessário
+*     estabelecer um limite através de uma das funções a isto destinadas.
+*     Por exemplo, se o limite de espaço alocado for diferente de zero e o
+*     total de espaço já alocado acrescido do espaço solicitado for maior
+*     do que o limite estabelecido, a função não aloca espaço e retorna NULL,
+*     simulando falta de memória.
+*
+*     A função pode simular esgotamento aleatório de memória. Para isto
+*     é necessário estabelecer a freqüência de NULLs simulados, vela o
+*     comando =limitarfrequencia em INTRPCED.C
+*
+*     Consulte as funções CED_Limitar... para detalhes das formas de
+*     limite que podem ser estabelecidas.
+*
+***************************************************************************/
 
    void * CED_Malloc( size_t Tamanho ,
                       int    numLinhaFonte ,
                       char * NomeArquivoFonte )
    {
 
+   /* Dados do bloco: Raiz de CED  &Alocar espaço */
+
       tpElemListaControle * pEspaco ;
 
+   /* Dados do bloco: Inicializar a identificação do código fonte */
+
       int tamNomeArq ;
+
+   /* Raiz de CED  &Alocar espaço */
 
       TST_ASSERT( Tamanho > 0 ) ;
       TST_ASSERT( numLinhaFonte > 0 ) ;
@@ -313,7 +362,7 @@
          {
             if ( LimiteMemoria < EspacoTotalAlocado + ( long ) Tamanho )
             {
-               TST_ExibirPrefixo( TIPO_MSG_INFO , "Simula falta de memoria." ) ;
+               TST_ExibirPrefixo( TIPO_MSG_INFO , "Simula falta de memória." ) ;
                ContaNULL++ ;
                return NULL ;
             } /* if */
@@ -323,7 +372,7 @@
          {
             if ( numEspacosAlocados >= LimiteNumEspacos )
             {
-               TST_ExibirPrefixo( TIPO_MSG_INFO , "Limita numero de espacos alocados." ) ;
+               TST_ExibirPrefixo( TIPO_MSG_INFO , "Limita número de espaços alocados." ) ;
                ContaNULL++ ;
                return NULL ;
             } /* if */
@@ -333,7 +382,7 @@
          {
             if ( ALT_GerarFrequencia( 1 , &FrequenciaMalloc , LIMITE_FREQUENCIA ) > 0)
             {
-               TST_ExibirPrefixo( TIPO_MSG_INFO , "Simulou NULL por frequencia." ) ;
+               TST_ExibirPrefixo( TIPO_MSG_INFO , "Simulou NULL por freqüência." ) ;
                ContaNULL++ ;
                return NULL ;
             } /* if */
@@ -347,7 +396,7 @@
 
          if ( pEspaco == NULL )
          {
-            TST_ExibirPrefixo( TIPO_MSG_INFO , "Memoria real insuficiente." ) ;
+            TST_ExibirPrefixo( TIPO_MSG_INFO , "Memória real insuficiente." ) ;
             return NULL ;
          } /* if */
 
@@ -367,7 +416,6 @@
 
       /* Inicializar os valores de controle do espaço */
 
-         pEspaco->EspacoNULL       = ESPACO_NULL ;
          pEspaco->ImpressaoDigital = IMPRESSAO_DIGITAL ;
          pEspaco->tamTotal         = Tamanho + sizeof( tpElemListaControle ) ;
          pEspaco->idEspaco         = TotalAlocacoes ;
@@ -389,7 +437,7 @@
          } /* if */
          strcpy( pEspaco->NomeArquivoFonte , NomeArquivoFonte ) ;
 
-      /* Encadear na origem da lista de espaços alocados */
+      /* Encadear na lista de espaços alocados */
 
          pEspaco->pAnt      = NULL ;
          pEspaco->pProx     = pOrgLista ;
@@ -404,68 +452,39 @@
 
       return ( void * ) &( pEspaco->Valor ) ;
 
-   } /* Fim função: CED  &Alocar espaço malloc */
+   } /* Fim pacote: Raiz de CED  &Alocar espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Alocar espaço todo zerado calloc
-*  ****/
-
-   void * CED_Calloc( size_t Tamanho ,
-                      int    numLinhaFonte ,
-                      char * NomeArquivoFonte )
-   {
-
-      char * pAlloc ;
-
-      pAlloc = ( char * ) CED_Malloc( Tamanho , numLinhaFonte ,
-                                      NomeArquivoFonte ) ;
-      if ( pAlloc != NULL )
-      {
-         memset( pAlloc , '\0' , Tamanho ) ;
-      } /* if */
-
-      return pAlloc ;
-
-   } /* Fim função: CED  &Alocar espaço todo zerado calloc */
-
-/***************************************************************************
+*  Fun‡„o: CED  &Desalocar espaço
 *
-*  Função: CED  &Realocar espaço alocado realloc
-*  ****/
-
-   void * CED_Realloc( size_t Tamanho ,
-                       int    numLinhaFonte ,
-                       char * NomeArquivoFonte )
-   {
-
-      char Msg[ 200 ] ;
-
-      sprintf( Msg ,
-               "realloc( %d ) nao esta disponivel em CESPDIN. "
-               "Linha: %d  Modulo: %s" ,
-               Tamanho , numLinhaFonte , NomeArquivoFonte ) ;
-
-      ExibirMensagem( Msg ) ;
-      return NULL ;
-
-   } /* Fim função: CED  &Realocar espaço alocado realloc */
-
-/***************************************************************************
+*  Descri‡„o da fun‡„o
+*     Elimina o elemento da lista de controle. Todos os bytes são tornados
+*     iguais a 'x'. O identificador do tipo do espaço também
+*     é destruído, possibilitando verificar se ele ainda está alocado.
 *
-*  Função: CED  &Desalocar espaço
-*  ****/
+*     Ao usar esta função deve-se tomar o cuidado de nunca usar free para
+*     desalocar um espaço controlado por este módulo.
+*     Ou seja, evite o uso de malloc e free em módulos distintos em
+*     que malloc está num módulo controlado e free não.
+*     O mais seguro é ou ter todos os módulos sob controle, ou ter nenhum.
+*
+***************************************************************************/
 
    void CED_Free( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  &Desalocar espaço */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Desalocar espaço */
 
       TST_ASSERT( estaInicializado ) ;
 
       if ( Ponteiro == NULL )
       {
-         TST_ExibirPrefixo( TIPO_MSG_INFO , "Desalocar espaco recebeu ponteiro nulo" ) ;
+         TST_ExibirPrefixo( TIPO_MSG_INFO , "Desalocar espaço recebeu ponteiro nulo" ) ;
          return ;
       } /* if */
 
@@ -478,23 +497,32 @@
 
       DesalocarEspaco( pEspaco ) ;
 
-   } /* Fim função: CED  &Desalocar espaço */
+   } /* Fim pacote: Raiz de CED  &Desalocar espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Exibir conteúdo do espaço
-*  ****/
+*  Fun‡„o: CED  &Exibir conteúdo do espaço
+*
+*  Descri‡„o da fun‡„o
+*     Exibe o conteudo completo de um espaço de memória.
+*     A parte útil é exibida em formato hexadecimal convencional
+*
+***************************************************************************/
 
    void CED_ExibirEspaco( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  &Exibir conteúdo do espaço */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Exibir conteúdo do espaço */
 
       TST_ASSERT( estaInicializado ) ;
 
       if ( Ponteiro == NULL )
       {
-         TST_ExibirPrefixo( TIPO_MSG_INFO , "Exibir espaco recebeu ponteiro nulo." ) ;
+         TST_ExibirPrefixo( TIPO_MSG_INFO , "Exibir espaço recebeu ponteiro nulo." ) ;
          return ;
       } /* if */
 
@@ -508,17 +536,30 @@
 
       TST_ExibirEspacoHexa( pEspaco->tamValor , pEspaco->Valor ) ;
 
-   } /* Fim função: CED  &Exibir conteúdo do espaço */
+   } /* Fim pacote: Raiz de CED  &Exibir conteúdo do espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Exibir todos os espaços
-*  ****/
+*  Fun‡„o: CED  &Exibir todos os espaços
+*
+*  Descri‡„o da fun‡„o
+*     Exibe todos os espaços que satisfazem uma determinada regra.
+*     Ver o tipo CED_tpModoExibir para uma explicação quanto às regras
+*     de seleção de espaços a exibir.
+*        CED_ExibirTodos     - exibe todos os espaços
+*        CED_ExibirAtivos    - exibe os espaços marcados ativos
+*        CED_ExibirInativos  - exibe os espaços marcados não ativos
+*
+***************************************************************************/
 
    void CED_ExibirTodosEspacos( CED_tpModoExibir Regra )
    {
 
+   /* Dados do bloco: Tratar modo de exibir */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Exibir todos os espaços */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -586,17 +627,51 @@
 
       } /* fim repete: Raiz de CED  &Exibir todos os espaços */
 
-   } /* Fim função: CED  &Exibir todos os espaços */
+   } /* Fim pacote: Raiz de CED  &Exibir todos os espaços */
 
 /***************************************************************************
 *
-*  Função: CED  &Definir tipo do espaço
-*  ****/
+*  Fun‡„o: CED  &Definir tipo do espaço
+*
+*  Descri‡„o da fun‡„o
+*     Caso o tipo do espaço ainda não esteja definido, atribui o tipo.
+*
+*     O tipo do espaço é inicializado para CED_ID_TIPO_VALOR_NULO
+*     quando da alocação com CED_Malloc. Posteriormente pode ser
+*     alterado com a presente função.
+*
+*     A atribuição será realizada somente se uma das condições a seguir
+*     for verdadeira:
+*     - o tipo a ser atribuido é CED_ID_TIPO_VALOR_NULO
+*     - ou o tipo do espaço é CED_ID_TIPO_VALOR_NULO
+*
+*     Para trocar o tipo de um espaço precisa-se primeiro torná-lo
+*     igual a CED_ID_TIPO_VALOR_NULO para, depois, atribuir o novo tipo.
+*
+*     Uma vez definido o tipo do espaço, funções cliente podem controlar
+*     a consistência entre o tipo implicitamente associado ao ponteiro
+*     e o tipo que o espaço de fato contém.
+*
+*     Sugere-se que o desenvolvedor da aplicação crie uma tabela global
+*     contendo um "enum" com os nomes de todos os tipos ('typedef struct') que
+*     podem ser utilizados como declaradores de espaços dinâmicos.
+*     Ao definir o tipo, pode-se, agora, utilizar o nome correspondente
+*     ao tipo do espaço alocado como o idTipo a ser definido. Veja
+*     as explicações no arquivo IdTiposEspaco.def no subdiretório Tabelas
+*
+*     O presente sistema de controle de tipos não prevê mecanismos para
+*     tratamento de herança.
+*
+***************************************************************************/
 
    int CED_DefinirTipoEspaco( void * Ponteiro , int idTipo )
    {
 
+   /* Dados do bloco: Raiz de CED  &Definir tipo do espaço */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Definir tipo do espaço */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -621,17 +696,38 @@
 
       return FALSE ;
 
-   } /* Fim função: CED  &Definir tipo do espaço */
+   } /* Fim pacote: Raiz de CED  &Definir tipo do espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Marcar ativo o espaço
-*  ****/
+*  Fun‡„o: CED  &Marcar ativo o espaço
+*
+*  Descri‡„o da fun‡„o
+*     Marca determinado espaço como ativo.
+*
+*     A marca ativo/não ativo é utilizada para apoiar o controle de
+*     vazamento de memória. Siga o seguinte roteiro:
+*     - Marque todos os espaços não ativos.
+*     - A partir das âncoras, percorra as estruturas ativas marcando
+*       ativos os espaços visitados. Este percorrimento é recursivo.
+*       Retorna-se da chamada se encontrar um espaço já marcado ativo, ou
+*       se não tiver para onde caminhar. Note que para poder fazer isto
+*       é necessário conhecer-se o tipo dos dados contidos em cada um
+*       dos espaços alocados.
+*     - Percorra a lista de todos os espaços verificando se cada espaço
+*       visitado é ou não inativo. Os não ativos provavelmente correspondem
+*       a vazamento de memória.
+*
+***************************************************************************/
 
    void CED_MarcarEspacoAtivo( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  &Marcar ativo o espaço */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Marcar ativo o espaço */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -648,17 +744,25 @@
 
       pEspaco->ehAtivo = TRUE ;
 
-   } /* Fim função: CED  &Marcar ativo o espaço */
+   } /* Fim pacote: Raiz de CED  &Marcar ativo o espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Marcar não ativo o espaço
-*  ****/
+*  Fun‡„o: CED  &Marcar não ativo o espaço
+*
+*  Descri‡„o da fun‡„o
+*     Ver CED_MarcarEspacoAtivo
+*
+***************************************************************************/
 
    void CED_MarcarEspacoNaoAtivo( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  &Marcar não ativo o espaço */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Marcar não ativo o espaço */
 
       TST_ASSERT( estaInicializado ) ;
          
@@ -675,18 +779,28 @@
          
       pEspaco->ehAtivo = FALSE ;
 
-   } /* Fim função: CED  &Marcar não ativo o espaço */
+   } /* Fim pacote: Raiz de CED  &Marcar não ativo o espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Marcar não ativos todos os espaços
-*  ****/
+*  Fun‡„o: CED  &Marcar não ativos todos os espaços
+*
+*  Descri‡„o da fun‡„o
+*     Percorre todos os espaços alocados marcando-os inativos.
+*
+*     Veja: CED_MarcarEspacoAtivo
+*
+***************************************************************************/
 
    void CED_MarcarTodosEspacosInativos( )
    {
 
+   /* Dados do bloco: Raiz de CED  &Marcar não ativos todos os espaços */
+
       tpElemListaControle * pEspaco ;
          
+
+   /* Raiz de CED  &Marcar não ativos todos os espaços */
 
       TST_ASSERT( estaInicializado ) ;
          
@@ -697,45 +811,80 @@
          pEspaco = pEspaco->pProx ;
       } /* while */
 
-   } /* Fim função: CED  &Marcar não ativos todos os espaços */
+   } /* Fim pacote: Raiz de CED  &Marcar não ativos todos os espaços */
 
 /***************************************************************************
 *
-*  Função: CED  &Limitar memória disponível
-*  ****/
+*  Fun‡„o: CED  &Limitar memória disponível
+*
+*  Descri‡„o da fun‡„o
+*     Estabelece um limite de memória disponível. Este limite afeta
+*     o comportamento da função CED_Malloc.
+*
+*     Embora a função possa ser chamada a qualquer momento, recomenda-se
+*     que seja chamada antes do primeiro caso de teste capaz de alocar
+*     espaço de memória dinâmica por intermédio da função CED_Malloc
+*     contida nesse módulo.
+*
+***************************************************************************/
 
    void CED_LimitarMemoriaDisponivel( long NovoLimiteMemoria )
    {
+
+   /* Raiz de CED  &Limitar memória disponível */
 
       TST_ASSERT( estaInicializado ) ;
       TST_ASSERT( NovoLimiteMemoria >= 0 ) ;
 
       LimiteMemoria = NovoLimiteMemoria ;
 
-   } /* Fim função: CED  &Limitar memória disponível */
+   } /* Fim pacote: Raiz de CED  &Limitar memória disponível */
 
 /***************************************************************************
 *
-*  Função: CED  &Limitar número de espaços alocados
-*  ****/
+*  Fun‡„o: CED  &Limitar número de espaços alocados
+*
+*  Descri‡„o da fun‡„o
+*     Limita o número de espaços alocados. Esta função afeta o comportamento
+*     de CED_Malloc, estabelecendo um limite para o número total de
+*     espaços alocados em um dado momento.
+*
+*     Embora a função possa ser chamada a qualquer momento, recomenda-se
+*     que seja chamada antes do primeiro caso de teste que provoque
+*     alocação de espaço de memória.
+*
+***************************************************************************/
 
    void CED_LimitarNumeroTotalEspacos( long numTotalEspacos )
    {
+
+   /* Raiz de CED  &Limitar número de espaços alocados */
 
       TST_ASSERT( estaInicializado ) ;
       TST_ASSERT( numTotalEspacos >= 0 ) ;
 
       LimiteNumEspacos = numTotalEspacos ;
 
-   } /* Fim função: CED  &Limitar número de espaços alocados */
+   } /* Fim pacote: Raiz de CED  &Limitar número de espaços alocados */
 
 /***************************************************************************
 *
-*  Função: CED  &Limitar com freqüência de geração de NULL
-*  ****/
+*  Fun‡„o: CED  &Limitar com freqüência de geração de NULL
+*
+*  Descri‡„o da fun‡„o
+*     Esta função estabelece a freqüência com a qual não deverá ser
+*     gerado NULL, o complemento a esta freqüência é a frequüência com
+*     a qual deverá ser retornado NULL (não aloca) independentemente da
+*     existência ou não de memória disponível.
+*     A função visa apoiar a verificação de se o comportamento de um
+*     programa leva em conta os retornos de falta de memória.
+*
+***************************************************************************/
 
    int CED_LimitarFrequencia( int Frequencia )
    {
+
+   /* Raiz de CED  &Limitar com freqüência de geração de NULL */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -749,15 +898,21 @@
 
       return TRUE ;
 
-   } /* Fim função: CED  &Limitar com freqüência de geração de NULL */
+   } /* Fim pacote: Raiz de CED  &Limitar com freqüência de geração de NULL */
 
 /***************************************************************************
 *
-*  Função: CED  &Limitar, eliminar limites
-*  ****/
+*  Fun‡„o: CED  &Limitar, eliminar limites
+*
+*  Descri‡„o da fun‡„o
+*     Esta função elimina todos os limites de memória por ventura em vigor.
+*
+***************************************************************************/
 
    void CED_EliminarLimites( )
    {
+
+   /* Raiz de CED  &Limitar, eliminar limites */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -765,23 +920,31 @@
       LimiteNumEspacos     = 0 ;
       FrequenciaMalloc     = 0 ;
 
-   } /* Fim função: CED  &Limitar, eliminar limites */
+   } /* Fim pacote: Raiz de CED  &Limitar, eliminar limites */
 
 /***************************************************************************
 *
-*  Função: CED  &Obter o tipo do espaço de dados
-*  ****/
+*  Fun‡„o: CED  &Obter o tipo do espaço de dados
+*
+*  Descri‡„o da fun‡„o
+*     Retorna o identificador do tipo do espaço apontado.
+*
+***************************************************************************/
 
    int CED_ObterTipoEspaco( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  &Obter o tipo do espaço de dados */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Obter o tipo do espaço de dados */
 
       TST_ASSERT( estaInicializado ) ;
 
       if ( Ponteiro == NULL )
       {
-         return CED_ID_TIPO_NULL ;
+         return CED_PONTEIRO_NULO ;
       } /* if */
 
       pEspaco = ObterOrigemElemento( Ponteiro ) ;
@@ -792,17 +955,25 @@
 
       return pEspaco->idTipoValor ;
 
-   } /* Fim função: CED  &Obter o tipo do espaço de dados */
+   } /* Fim pacote: Raiz de CED  &Obter o tipo do espaço de dados */
 
 /***************************************************************************
 *
-*  Função: CED  &Obter tamanho do valor contido no espaço
-*  ****/
+*  Fun‡„o: CED  &Obter tamanho do valor contido no espaço
+*
+*  Descri‡„o da fun‡„o
+*     Retorna o número de bytes úteis do espaço
+*
+***************************************************************************/
 
    int CED_ObterTamanhoValor( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  &Obter tamanho do valor contido no espaço */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Obter tamanho do valor contido no espaço */
 
       TST_ASSERT( estaInicializado ) ;
          
@@ -819,72 +990,92 @@
 
       return pEspaco->tamValor ;
 
-   } /* Fim função: CED  &Obter tamanho do valor contido no espaço */
+   } /* Fim pacote: Raiz de CED  &Obter tamanho do valor contido no espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Obter tamanho do espaço alocado _msize
-*  ****/
-
-   size_t CED_Msize( void * Ponteiro )
-   {
-
-      return ((size_t) CED_ObterTamanhoValor( Ponteiro )) ;
-
-   } /* Fim função: CED  &Obter tamanho do espaço alocado _msize */
-
-/***************************************************************************
+*  Fun‡„o: CED  &Obter número de espaços alocados
 *
-*  Função: CED  &Obter número de espaços alocados
-*  ****/
+*  Descri‡„o da fun‡„o
+*     Retorna o número de elementos da lista de espaços alocados
+*
+***************************************************************************/
 
    int CED_ObterNumeroEspacosAlocados( )
    {
+
+   /* Raiz de CED  &Obter número de espaços alocados */
 
       TST_ASSERT( estaInicializado ) ;
 
       return numEspacosAlocados ;
 
-   } /* Fim função: CED  &Obter número de espaços alocados */
+   } /* Fim pacote: Raiz de CED  &Obter número de espaços alocados */
 
 /***************************************************************************
 *
-*  Função: CED  &Obter total de espaços alocados
-*  ****/
+*  Fun‡„o: CED  &Obter total de espaços alocados
+*
+*  Descri‡„o da fun‡„o
+*     Retorna o número total de vezes que foi chamada a função
+*     CED_Malloc.
+*
+***************************************************************************/
 
    int CED_ObterTotalAlocacoes( )
    {
+
+   /* Raiz de CED  &Obter total de espaços alocados */
 
       TST_ASSERT( estaInicializado ) ;
 
       return TotalAlocacoes ;
 
-   } /* Fim função: CED  &Obter total de espaços alocados */
+   } /* Fim pacote: Raiz de CED  &Obter total de espaços alocados */
 
 /***************************************************************************
 *
-*  Função: CED  &Obter número total de NULLs gerados
-*  ****/
+*  Fun‡„o: CED  &Obter número total de NULLs gerados
+*
+*  Descri‡„o da fun‡„o
+*     Retorna o número de NULLs retornados em virtude de limitações impostas.
+*     Veja as funcoes CED_LimitarXXX
+*
+***************************************************************************/
 
    long CED_ObterNumNULL( void )
    {
+
+   /* Raiz de CED  &Obter número total de NULLs gerados */
 
       TST_ASSERT( estaInicializado ) ;
 
       return ContaNULL ;
 
-   } /* Fim função: CED  &Obter número total de NULLs gerados */
+   } /* Fim pacote: Raiz de CED  &Obter número total de NULLs gerados */
 
 /***************************************************************************
 *
-*  Função: CED  &Obter número de espaços segundo regra
-*  ****/
+*  Fun‡„o: CED  &Obter número de espaços segundo regra
+*
+*  Descri‡„o da fun‡„o
+*     Obtém o número de elementos contidos na lista de espaços alocados,
+*     segundo a regra:
+*        CED_ExibirTodos     - exibe todos os espaços
+*        CED_ExibirAtivos    - exibe os espaços marcados ativos
+*        CED_ExibirInativos  - exibe os espaços marcados não ativos
+*
+***************************************************************************/
 
    int CED_ObterNumeroEspacos( CED_tpModoExibir Regra )
    {
 
+   /* Dados do bloco: Raiz de CED  &Obter número de espaços segundo regra */
+
       tpElemListaControle * pEspaco ;
       int Conta = 0 ;
+
+   /* Raiz de CED  &Obter número de espaços segundo regra */
 
       TST_ASSERT( estaInicializado ) ;
                
@@ -922,43 +1113,74 @@
 
       return Conta ;
 
-   } /* Fim função: CED  &Obter número de espaços segundo regra */
+   } /* Fim pacote: Raiz de CED  &Obter número de espaços segundo regra */
 
 /***************************************************************************
 *
-*  Função: CED  &Obter espaço total alocado
-*  ****/
+*  Fun‡„o: CED  &Obter espaço total alocado
+*
+*  Descri‡„o da fun‡„o
+*     Obtém o total, em bytes, de espaços úteis alocados.
+*
+***************************************************************************/
 
    long CDE_ObterEspacoTotalAlocado( )
    {
+
+   /* Raiz de CED  &Obter espaço total alocado */
 
       TST_ASSERT( estaInicializado ) ;
 
       return EspacoTotalAlocado ;
 
-   } /* Fim função: CED  &Obter espaço total alocado */
+   } /* Fim pacote: Raiz de CED  &Obter espaço total alocado */
 
 /***************************************************************************
 *
-*  Função: CED  &Iterador: iniciar iterador de espaços
-*  ****/
+*  Fun‡„o: CED  &Iterador: iniciar iterador de espaços
+*
+*  Descri‡„o da fun‡„o
+*     Inicia o iterador com o primeiro espaço da lista de controle de espaços
+*     dinâmicos.
+*
+*     O iterador pode ser utilizado para verificar a integridade dos
+*     espaços de dados sob controle do módulo. Para isto a função de
+*     verificação de espaços deve percorrer todos os espaços alocados
+*     disparando o controle individual para cada um deles.
+*     Pode-se também simular um garbage collector, percorrendo todos
+*     os espaços e marca-los inativos. Depois percorrer, a partir
+*     das ancoras, todos os espaços adjacentes, marcando ativos os
+*     espaços visitados. Evidentemente se já estiver marcado ativo
+*     retorna-se para tratar do próximo estado pendente na pilha.
+*     Ao final, os espaços que ainda estiverem marcados inativos
+*     correspondem a vazamento de memória.
+*
+***************************************************************************/
 
    void CED_InicializarIteradorEspacos( )
    {
+
+   /* Raiz de CED  &Iterador: iniciar iterador de espaços */
 
       TST_ASSERT( estaInicializado ) ;
 
       pEspacoCorr = pOrgLista ;
 
-   } /* Fim função: CED  &Iterador: iniciar iterador de espaços */
+   } /* Fim pacote: Raiz de CED  &Iterador: iniciar iterador de espaços */
 
 /***************************************************************************
 *
-*  Função: CED  &Iterador: avançar para o próximo espaço
-*  ****/
+*  Fun‡„o: CED  &Iterador: avançar para o próximo espaço
+*
+*  Descri‡„o da fun‡„o
+*     Avança o iterador para o próximo espaço.
+*
+***************************************************************************/
 
    int CED_AvancarProximoEspaco( )
    {
+
+   /* Raiz de CED  &Iterador: avançar para o próximo espaço */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -976,15 +1198,21 @@
          return FALSE ;
       } /* if */
 
-   } /* Fim função: CED  &Iterador: avançar para o próximo espaço */
+   } /* Fim pacote: Raiz de CED  &Iterador: avançar para o próximo espaço */
 
 /***************************************************************************
 *
-*  Função: CED  &Iterador: obter referência para o espaço corrente
-*  ****/
+*  Fun‡„o: CED  &Iterador: obter referência para o espaço corrente
+*
+*  Descri‡„o da fun‡„o
+*     Obtém a referência para a parte útil do espaço corrente.
+*
+***************************************************************************/
 
    void * CED_ObterPonteiroEspacoCorrente( )
    {
+
+   /* Raiz de CED  &Iterador: obter referência para o espaço corrente */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -995,15 +1223,23 @@
 
       return ( void * ) &( pEspacoCorr->Valor ) ;
 
-   } /* Fim função: CED  &Iterador: obter referência para o espaço corrente */
+   } /* Fim pacote: Raiz de CED  &Iterador: obter referência para o espaço corrente */
 
 /***************************************************************************
 *
-*  Função: CED  &Iterador: existe espaço corrente
-*  ****/
+*  Fun‡„o: CED  &Iterador: existe espaço corrente
+*
+*  Descri‡„o da fun‡„o
+*     Verifica se o iterador referencia um espaço corrente.
+*     Caso retorne FALSE, o iterador chegou ao final da lista de espaços
+*     ou, então, ainda não foi inicializado.
+*
+***************************************************************************/
 
    int CED_ExisteEspacoCorrente( )
    {
+
+   /* Raiz de CED  &Iterador: existe espaço corrente */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -1014,29 +1250,50 @@
 
       return TRUE ;
 
-   } /* Fim função: CED  &Iterador: existe espaço corrente */
+   } /* Fim pacote: Raiz de CED  &Iterador: existe espaço corrente */
 
 /***************************************************************************
 *
-*  Função: CED  &Iterador: terminar iterador
-*  ****/
+*  Fun‡„o: CED  &Iterador: terminar iterador
+*
+*  Descri‡„o da fun‡„o
+*     Desativa o iterador. A referência para o espáco corrente passa
+*     a ser NULL.
+*
+***************************************************************************/
 
    void CED_TerminarIteradorEspacos( )
    {
 
+   /* Raiz de CED  &Iterador: terminar iterador */
+
       pEspacoCorr = NULL ;
 
-   } /* Fim função: CED  &Iterador: terminar iterador */
+   } /* Fim pacote: Raiz de CED  &Iterador: terminar iterador */
 
 /***************************************************************************
 *
-*  Função: CED  &Iterador: excluir espaço corrente
-*  ****/
+*  Fun‡„o: CED  &Iterador: excluir espaço corrente
+*
+*  Descri‡„o da fun‡„o
+*     Elimina o espaço corrente da lista de espaços controlados.
+*     O espaço é liberado tornando ilegais todos os acessos realizados
+*     por funções do usuário.
+*     Na realidade esta função corresponde a um CED_Free.
+*     Utilize esta função somente para para eliminar espaços sabidamente
+*     inativos, ou para deturpar ao testar reações a anomalias em estruturas
+*     de dados.
+*
+***************************************************************************/
 
    void CED_ExcluirEspacoCorrente( )
    {
 
+   /* Dados do bloco: Raiz de CED  &Iterador: excluir espaço corrente */
+
       tpElemListaControle * pDesaloca ;
+
+   /* Raiz de CED  &Iterador: excluir espaço corrente */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -1047,17 +1304,25 @@
          DesalocarEspaco( pDesaloca ) ;
       } /* if */
 
-   } /* Fim função: CED  &Iterador: excluir espaço corrente */
+   } /* Fim pacote: Raiz de CED  &Iterador: excluir espaço corrente */
 
 /***************************************************************************
 *
-*  Função: CED  &Verificar se espaço é ativo
-*  ****/
+*  Fun‡„o: CED  &Verificar se espaço é ativo
+*
+*  Descri‡„o da fun‡„o
+*     Retorna TRUE se o espaço referenciado está marcado ativo
+*
+***************************************************************************/
 
    int CED_EhEspacoAtivo( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  &Verificar se espaço é ativo */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Verificar se espaço é ativo */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -1074,18 +1339,29 @@
 
       return pEspaco->ehAtivo ;
 
-   } /* Fim função: CED  &Verificar se espaço é ativo */
+   } /* Fim pacote: Raiz de CED  &Verificar se espaço é ativo */
 
 /***************************************************************************
 *
-*  Função: CED  &Verificar a integridade de um espaço de dados
-*  ****/
+*  Fun‡„o: CED  &Verificar a integridade de um espaço de dados
+*
+*  Descri‡„o da fun‡„o
+*     Verifica a integridade de um determinado espaço de dados.
+*     Retorna o número de falhas encontradas.
+*     Esta função pode levar a um cancelamento do programa, caso o ponteiro
+*     fornecido esteja errado.
+*
+***************************************************************************/
 
    int CED_VerificarEspaco( void * Ponteiro ,
                             int ( * pVerificarValor )( void * pValor ))
    {
 
+   /* Dados do bloco: Raiz de CED  &Verificar a integridade de um espaço de dados */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  &Verificar a integridade de um espaço de dados */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -1109,7 +1385,7 @@
          {
             if ( pVerificarValor( pEspaco->Valor ) == 0 )
             {
-               ExibirMensagem( "Valor contido no espaco esta incorreto." ) ;
+               ExibirMensagem( "Valor contido no espaço está incorreto." ) ;
                ExibirCabecalho( TIPO_MSG_VAZIA , pEspaco ) ;
                fprintf( TST_ObterArqLog( ) , "\n" ) ;
                return FALSE ;
@@ -1118,20 +1394,30 @@
 
       return TRUE ;
 
-   } /* Fim função: CED  &Verificar a integridade de um espaço de dados */
+   } /* Fim pacote: Raiz de CED  &Verificar a integridade de um espaço de dados */
 
 /***************************************************************************
 *
-*  Função: CED  &Verificar todos os espaços alocados
-*  ****/
+*  Fun‡„o: CED  &Verificar todos os espaços alocados
+*
+*  Descri‡„o da fun‡„o
+*     Percorre toda a lista, verificando um a um os espaços.
+*     Caso um ou mais espaços estejam errados, pode ocorrer
+*     cancelamento da execução em virtude de acesso a memória ilegal.
+*
+***************************************************************************/
 
    int CED_VerificarTudo( int ( * pVerificarValor )( void * pValor ))
    {
+
+   /* Dados do bloco: Raiz de CED  &Verificar todos os espaços alocados */
 
       tpElemListaControle * pEspaco ;
 
       int ContaErro   = 0 ,
           ContaEspaco = 0 ;
+
+   /* Raiz de CED  &Verificar todos os espaços alocados */
 
       TST_ASSERT( estaInicializado ) ;
 
@@ -1164,20 +1450,20 @@
 
       return ContaErro == 0 ;
 
-   } /* Fim função: CED  &Verificar todos os espaços alocados */
+   } /* Fim pacote: Raiz de CED  &Verificar todos os espaços alocados */
 
-
-/*****  Código das funções encapsuladas no módulo  *****/
-
-
-/***********************************************************************
+/***************************************************************************
 *
-*  $FC Função: CED  -Desalocar espaço dado
+*  Fun‡„o: CED  -Desalocar espaço dado
 *
-***********************************************************************/
+*  Descri‡„o da fun‡„o
+*
+***************************************************************************/
 
    void DesalocarEspaco( tpElemListaControle * pEspaco )
    {
+
+   /* Raiz de CED  -Desalocar espaço dado */
 
       /* Desalocar o espaço apontado */
 
@@ -1198,39 +1484,36 @@
 
       /* Limpar o espaço a liberar */
 
+
          memset( pEspaco->ControleAntes , CHAR_DESALOC ,
                  pEspaco->tamValor + DIM_CONTROLE ) ;
-         * (( unsigned long * ) ( pEspaco->Valor )) = 0 ;
+
          memcpy( pEspaco->ControleAntes + pEspaco->tamValor + DIM_CONTROLE ,
                  CONTROLE_ERRO , DIM_CONTROLE ) ;
 
          pEspaco->idTipoValor = CED_ID_TIPO_ILEGAL ;
          free( pEspaco ) ;
 
-   } /* Fim função: CED  -Desalocar espaço dado */
+   } /* Fim pacote: Raiz de CED  -Desalocar espaço dado */
 
-
-/***********************************************************************
+/***************************************************************************
 *
-*  $FC Função: CED  -Obter ponteiro para o elemento da lista de espaços ativos
+*  Fun‡„o: CED  -Obter ponteiro para o elemento da lista de espaços ativos
 *
-*  $ED Descrição da função
+*  Descri‡„o da fun‡„o
 *     Retorna o ponteiro para o início do elemento da lista de espaços
 *     alocados, no entanto sem controlar a integridade do espáco.
 *
-*  $EP Parâmetros
-*     $P Ponteiro - aponta para o campo Valor do espaço
-*
-*  $FV Valor retornado
-*     Se o espaço estiver válido, retorna o ponteiro para ele,
-*     caso contrário retorna NULL.
-*
-***********************************************************************/
+***************************************************************************/
 
    tpElemListaControle * ObterOrigemElemento( void * Ponteiro )
    {
 
+   /* Dados do bloco: Raiz de CED  -Obter ponteiro para o elemento da lista de espaços ativos */
+
       tpElemListaControle * pEspaco ;
+
+   /* Raiz de CED  -Obter ponteiro para o elemento da lista de espaços ativos */
 
       TST_ASSERT( Ponteiro != NULL ) ;
 
@@ -1243,12 +1526,10 @@
          return NULL ;
       } /* if */
 
+
       if ( VerificarEspaco( pEspaco ))
       {
-         ExibirMensagem(  "Espaco de dados esta corrompido." ) ;
-
-         fprintf( TST_ObterArqLog( ) , " Id: %d  pValor: %p" ,
-                  pEspaco->idEspaco , pEspaco->Valor ) ;
+         ExibirMensagem(  "Espaço de dados está corrompido." ) ;
 
          ExibirCabecalho( TIPO_MSG_VAZIA , pEspaco ) ;
 
@@ -1259,43 +1540,43 @@
 
       return pEspaco ;
 
-   } /* Fim função: CED  -Obter ponteiro para o elemento da lista de espaços ativos */
+   } /* Fim pacote: Raiz de CED  -Obter ponteiro para o elemento da lista de espaços ativos */
 
-
-/***********************************************************************
+/***************************************************************************
 *
-*  $FC Função: CED  -Exibir cabecalho do espaco
+*  Fun‡„o: CED  -Exibir cabecalho do espaco
 *
-*  $ED Descrição da função
+*  Descri‡„o da fun‡„o
 *     Exibe todos os atributos, exceto o valor, contido no espaço.
 *
-*  $EP Parâmetros
-*     $P TipoMsg - string (3 caracteres) indicando o significado do texto
-*                  exibido na saída
-*     $P pEspaco - ponteiro para a origem do espaco (não para o valor)
-*
-***********************************************************************/
+***************************************************************************/
 
    void ExibirCabecalho( char * TipoMsg , tpElemListaControle * pEspaco )
    {
+
+   /* Dados do bloco: Raiz de CED  -Exibir cabecalho do espaco */
 
       FILE * pArqLog ;
 
       int i ;
 
+   /* Dados do bloco: Exibir ponteiro do espaço */
+
       char * pVal  ;
       char * pChar ;
 
+   /* Raiz de CED  -Exibir cabecalho do espaco */
+
       pArqLog = TST_ObterArqLog( ) ;
 
-      fprintf( pArqLog , "\n\n%s  Espaco de dados, id: %5d" ,
+      fprintf( pArqLog , "\n\n%s  Espaço de dados, id: %5d" ,
                   TipoMsg , pEspaco->idEspaco ) ;
 
       /* Exibir ponteiro do espaço */
 
          pVal  = pEspaco->Valor ;
 
-         fprintf( pArqLog , "  pValor: %p  hexa:" , pVal ) ;
+         fprintf( pArqLog , "  Ponteiro valor: %p imagem:" , pVal ) ;
 
          pChar = ( char * ) &pVal ;
          for( i = 0 ; i < DIM_PONTEIRO ; i++ )
@@ -1309,7 +1590,7 @@
          {
             fprintf( pArqLog , "  Id ant: %5d" , pEspaco->pAnt->idEspaco ) ;
          } else {
-            fprintf( pArqLog , "  E' origem lista" ) ;
+            fprintf( pArqLog , "  Origem" ) ;
          } /* if */
 
       /* Exibir identificação do espaço sucessor */
@@ -1318,20 +1599,16 @@
          {
             fprintf( pArqLog , "  Id suc: %5d" , pEspaco->pProx->idEspaco ) ;
          } else {
-            fprintf( pArqLog , "  E' final lista" ) ;
+            fprintf( pArqLog , "  Final" ) ;
          } /* if */
 
       /* Exibir o identificador do tipo do valor */
 
-         if ( pEspaco->idTipoValor == CED_ID_TIPO_VALOR_NULO )
-         {
-            fprintf( pArqLog , "\n     Tipo indefinido" ) ;
-         } else if ( pEspaco->idTipoValor == CED_ID_TIPO_ILEGAL )
-         {
-            fprintf( pArqLog , "\n     Tipo ilegal" ) ;
-         } else
+         if ( pEspaco->idTipoValor != CED_ID_TIPO_VALOR_NULO )
          {
             fprintf( pArqLog , "\n     Id tipo valor: %d" , pEspaco->idTipoValor ) ;
+         } else {
+            fprintf( pArqLog , "\n     Tipo indefinido" ) ;
          } /* if */
 
       /* Tamanho útil do valor alocado */
@@ -1344,7 +1621,7 @@
          {
             fprintf( pArqLog , "  Ativo" ) ;
          } else {
-            fprintf( pArqLog , "  Nao ativo" ) ;
+            fprintf( pArqLog , "  Não ativo" ) ;
          } /* if */
 
       /* Exibir número da linha de código fonte onde foi alocado */
@@ -1370,75 +1647,57 @@
 
       /* Exibir controle após */
 
-         pChar = pEspaco->ControleApos - DIM_VALOR + pEspaco->tamValor ;
-         if ( memcmp( pChar , CONTROLE , DIM_CONTROLE ) == 0 )
+         if ( memcmp( pEspaco->ControleApos - DIM_VALOR + pEspaco->tamValor ,
+                      CONTROLE , DIM_CONTROLE ) == 0 )
          {
-            fprintf( pArqLog , "  Controle apos OK" ) ;
+            fprintf( pArqLog , "  Controle após OK" ) ;
          } else {
-            fprintf( pArqLog , "  Controle apos errado:" ) ;
+            fprintf( pArqLog , "  Controle após errado:" ) ;
             for( i = 0 ; i < DIM_CONTROLE ; i++ )
             {
-               fprintf( pArqLog , " %02X" , pChar[ i ] ) ;
+               fprintf( pArqLog , " %02X" , pEspaco->ControleApos[ i ] ) ;
             } /* for */
          } /* if */
 
-   } /* Fim função: CED  -Exibir cabecalho do espaco */
+   } /* Fim pacote: Raiz de CED  -Exibir cabecalho do espaco */
 
-
-/***********************************************************************
+/***************************************************************************
 *
-*  $FC Função: CED  -Exibir mensagem de erro
+*  Fun‡„o: CED  -Exibir mensagem de erro
 *
-*  $ED Descrição da função
+*  Descri‡„o da fun‡„o
 *     Exibe uma mensagem de erro ou advertência no formato padrão
 *
-*  $EP Parâmetros
-*     $P Msg  - mensagem a exibir. O string não deve conter controles de
-*               avanço de linha
-*
-***********************************************************************/
+***************************************************************************/
 
    void ExibirMensagem( char * Msg )
    {
 
+   /* Raiz de CED  -Exibir mensagem de erro */
+
       TST_ContarFalhas( ) ;
       TST_ExibirPrefixo( TIPO_MSG_ERRO , Msg ) ;
 
-   } /* Fim função: CED  -Exibir mensagem de erro */
+   } /* Fim pacote: Raiz de CED  -Exibir mensagem de erro */
 
-
-/***********************************************************************
+/***************************************************************************
 *
-*  $FC Função: CED  -Verificar integridade de determinado espaço
+*  Fun‡„o: CED  -Verificar integridade de determinado espaço
 *
-*  $ED Descrição da função
+*  Descri‡„o da fun‡„o
 *     Controla a integridade após conhecer o ponteiro para a origem
 *     do espaço. Não controla o campo valor.
 *
-*  $EP Parâmetros
-*     $P pEspaco - aponta a origem do espaço alocado
-*
-***********************************************************************/
+***************************************************************************/
 
    int VerificarEspaco( tpElemListaControle * pEspaco )
    {
 
+   /* Dados do bloco: Raiz de CED  -Verificar integridade de determinado espaço */
+
       int ContaErro = 0 ;
 
-      /* Verificar o marcador de espaco ainda não desalocado */
-
-         if ( pEspaco->EspacoNULL != ESPACO_NULL )
-         {
-            ContaErro ++ ;
-            if ( pEspaco->EspacoNULL == 0 )
-            {
-               ExibirMensagem( "Espaco ja\' foi desalocado: " ) ;
-            } else
-            {
-               ExibirMensagem( "Controle inicial corrompido: " ) ;
-            } /* if */
-            return ContaErro ;
-         } /* if */
+   /* Raiz de CED  -Verificar integridade de determinado espaço */
 
       /* Verificar id espaço */
 
@@ -1532,7 +1791,7 @@
 
       return ContaErro ;
 
-   } /* Fim função: CED  -Verificar integridade de determinado espaço */
+   } /* Fim pacote: Raiz de CED  -Verificar integridade de determinado espaço */
 
-/********** Fim do módulo de implementação: CED  Controlador de espaços de dados alocados dinamicamente **********/
+/********** Fim do m¢dulo: CED  Controlador de espaços de dados alocados dinamicamente **********/
 

@@ -1107,22 +1107,206 @@ static void AtualizaListas( TAB_tppTabuleiro pTabuleiro )
 		}
 	}
 }
+
+#ifdef _DEBUG
 /***********************************************************************
 *
 *  $FC Função: TAB  -Verifica
 *
 ***********************************************************************/
 	TAB_tpCondRet TAB_Verifica ( TAB_tppTabuleiro * pTabuleiro, int* numErros )
+{
+	LIS_tpCondRet retLis;
+	CAR_tppCarta pCarta;
+	int numCasas;
+	int i = 0;
+	(*numErros) = 0;
+
+	if( pTabuleiro != NULL && pTabuleiro->quantidadeNos > 0)
 	{
-		int i = 0;
-		(*numErros) = 0;
+		if( LIS_VerificaCorrenteNull( pTabuleiro->pMatriz ))
+		{
+			CNT_CONTAR("ERRO-no-corrente-nulo");
+			(*numErros) ++;
+		}
+		else if (LIS_RetornaCorrente(pTabuleiro->pMatriz) == 'x')
+		{
+			CNT_CONTAR("ERRO-no-corrente-com-lixo");
+			(*numErros) ++;
+		}
+	}
+	else
+	{
+		CNT_CONTAR("OK-no-corrente-consistente");
+	}
+	retLis = LIS_IrInicioLista(pTabuleiro->pMatriz);
+	if( retLis == 1 && pTabuleiro->quantidadeNos == 0)
+	{
+		CNT_CONTAR("OK-matriz-existe-mas-sem-nos");
+	}
 
-		if( pTabuleiro != NULL && pTabuleiro->quantidadeNos > 0){
+	// Prevendo origem NULA
+	if( !LIS_VerificaCorrenteNull( pTabuleiro->pMatriz ))
+	{
+		numCasas = pTabuleiro->quantidadeNos;
 
-			if( LIS_ObterElemento(pTabuleiro))
+		if(pTabuleiro != NULL)
+		{
+			if(LIS_QtdNos(pTabuleiro->pMatriz) == numCartasAntes)
+			{
+				// Teste tipo 
+				i=0;
+				LIS_IrInicioLista(pTabuleiro->pMatriz);
+				if(LIS_RetornaCorrente(pTabuleiro->pMatriz) != 'x')
+				{
+					do
+					{
+						i++;
+						if(LIS_RetornaCorrente(pTabuleiro->pMatriz) != 'x')
+						{
+							retLis = LIS_ObterValor( pTabuleiro->pMatriz,(void **) &pMatriz);
+							if ( retLis == 0 && pMatriz != NULL )
+							{
+
+								if (pPilha->tipo == CAR_ObterTipo(pCarta))
+								{
+									CNT_CONTAR("OK-tipo-correto");
+								}
+								else
+								{
+									CNT_CONTAR("ERRO-tipo");
+									(*numErros) ++;
+								}
+							}
+						}
+					}while((i < (pTabuleiro->qtdNos))  &&  LIS_AvancarElementoCorrente( pTabuleiro->pMatriz, 1 ) == 0); //tirei -1 do qtdnos
+
+					if( pTabuleiro->qtdNos > 0)
+					{
+						CNT_CONTAR("OK-qtdNos-maior-0");
+
+						/*Teste do sucessor altera*/
+
+						LIS_IrInicioLista(pTabuleiroe->pMatriz);
+						i = 0 ;
+						do
+						{
+							i++;
+							if ( LIS_RetornaSucessor( pTabuleiro->pMatriz ) == NULL )
+							{
+								CNT_CONTAR("ERRO-sucessor-nulo-quando-nao-deveria");
+								(*numErros) ++;
+							}
+							else
+							{
+								CNT_CONTAR("OK-sucessor-nao-nulo");
+							}
+							if (LIS_RetornaSucessor(pTabuleiro->pMatrizp) == 'x')
+							{
+								CNT_CONTAR("ERRO-sucessor-com-lixo");
+								(*numErros) ++;
+							}
+							else
+							{
+								CNT_CONTAR("OK-sucessor-sem-lixo");
+							}
+						} while( (i < (pTabuleiro->qtdNos -1))  && LIS_AvancarElementoCorrente( pTabuleiro->pMatriz, 1 ) == 0);
+
+
+						/*Teste do antecessor - lixo atribuído ou altera*/
+						i = 0;
+						LIS_IrFinalLista( pTabuleiro->pMatriz );
+						do
+						{
+							i++;
+							if ( LIS_RetornaAntecessor( pTabuleiro->pMatriz ) == NULL )
+							{
+								CNT_CONTAR("ERRO-antecessor-nulo-quando-nao-deveria");
+								(*numErros) ++;
+							}
+							else 
+							{
+								CNT_CONTAR("OK-antecessor-nao-nulo");
+							}
+							if (LIS_RetornaAntecessor(pTabuleiro->pMatriz) == 'x')
+							{
+								CNT_CONTAR("ERRO-antecessor-com-lixo");
+								(*numErros) ++;
+							}
+							else
+							{
+								CNT_CONTAR("OK-antecessor-sem-lixo");
+							}
+						} while((i < pTabuleiro->qtdNos -1) && LIS_AvancarElementoCorrente( pTabuleiro->pMatriz, -1 ) == 0);
+
+					}
+				}
+			}
+
 		}
 	}
 
+	/*Teste Origem Nula*/
+	if ( LIS_OrigemNula(pTabuleiro->pMatriz) && pTabuleiro->qtdNos > 0 )
+	{
+		CNT_CONTAR("ERRO-origem-nula");
+		(*numErros)++;
+	}
+	else
+	{
+		CNT_CONTAR("OK-origem-consistente");
+	}
+
+	return TAB_CondRetOK;
+}
+
+
+	TAB_tpCondRet TAB_Deturpa( TAB_tppTabuleiro * pTabuleiroeiro, int acao )
+	{
+
+		if( acao == 1 )
+		{
+			LIS_AndarInicio( pTabuleiro->pMatriz );
+			LIS_AvancarElementoCorrente( pTabuleiro->pMatriz , 1);
+			LiberarElemento( pTabuleiro->pMatriz ) ;
+		}
+		else if( acao == 2 )
+		{
+			LIS_AndarInicio( pTabuleiro->pMatriz );
+			LIS_AvancarElementoCorrente( pTabuleiro->pMatriz , 1);
+			LIS_AlteraSucessor( pTabuleiro->pMatriz ) ;
+		}
+		else if( acao == 3 )
+		{
+			LIS_AndarInicio( pTabuleiro->pMatriz );
+			LIS_AvancarElementoCorrente( pTabuleiro->pMatriz , 1);
+			LIS_AlteraPredecessor( pTabuleiro->pMatriz ) ;
+		}
+		else if( acao == 4 )
+		{
+			LIS_AndarInicio( pTabuleiro->pListaCartas );
+			LIS_AvancarElementoCorrente( pTabuleiro->pMatriz , 1);
+			LIS_AtribuiLixoSucessor( pTabuleiro->pMatriz ) ;
+		}
+		else if( acao == 5 )
+		{
+			LIS_AndarInicio( pTabuleiro->pMatriz );
+			LIS_AvancarElementoCorrente( pTabuleiro->pMatriz , 1);
+			LIS_AtribuiLixoPredecessor( pTabuleiro->pMatriz ) ;
+		}
+		else if( acao == 6 )
+		{
+			LIS_AndarInicio( pTabuleiro->pMatriz );
+			LIS_AvancarElementoCorrente( pTabuleiro->pMatriz , 1);
+			LIS_AlterarElemento( pTabuleiro->pMatriz, NULL) ;
+		}
+		else if( acao == 7 ){
+			LIS_AndarInicio( pTabuleiro->pMatriz );
+			LIS_AlterarElemento( pTabuleiro->pMatriz, NULL) ;
+
+		}
+		return TAB_CondRetOK ;
+	}
 
 
 

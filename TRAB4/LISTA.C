@@ -12,10 +12,13 @@
 *  Autores: avs - Arndt Von Staa
 *           fpf - Felipe Pessoa de Freitas
 *           mmq - Matheus de Mello Queiroz
+*           mcs - Maria Carolina Marinho
+*           gbha - Gustavo Azevedo
 *
 *  $HA Histórico de evolução:
 *     Versão  Autor    Data     Observações
-*	  7		  fpf	01/out/2016	Alteração das funções para somente retornar tpCondRet
+*     8       mcs   10/dez/2016 Adicionar funcoes para o T$
+*	   7		  fpf	 01/out/2016	Alteração das funções para somente retornar tpCondRet
 *     6       mmq   23/set/2016 adaptar para a utilizacao na aplicacao "Juiz de Xadrez"
 *     5       mmq   11/set/2016 alterar a função LIS_ProcuraValor
 *     4       avs   01/fev/2006 criar linguagem script simbólica
@@ -100,6 +103,63 @@
 										  int numElem ) ;
 
 /*****  Código das funções exportadas pelo módulo  *****/
+
+#ifdef _DEBUG
+tpElemLista * LIS_RetornaSucessor( LIS_tppLista pLista )
+{
+   return pLista->pElemCorr->pProx;
+}
+
+tpElemLista * LIS_RetornaAntecessor( LIS_tppLista pLista )
+{
+   return pLista->pElemCorr->pAnt;
+}
+
+tpElemLista * LIS_RetornaCorrente( LIS_tppLista pLista  )
+{
+   return (CAR_tppCarta)pLista->pElemCorr;
+}
+
+int LIS_VerificaCorrenteNull( LIS_tppLista pLista)
+{
+   if ( pLista->pElemCorr == NULL )
+      return 1;
+   return 0;
+}
+
+int LIS_QtdNos(LIS_tppLista pLista)
+{
+   return pLista->numElem;
+}
+
+int LIS_OrigemNula(LIS_tppLista pLista)
+{
+   if (pLista->pOrigemLista == NULL)
+      return 1;
+   return 0;
+}
+
+void LIS_AlteraSucessor( LIS_tppLista pLista )
+{
+   pLista->pElemCorr->pProx = NULL ;
+}
+void LIS_AlteraPredecessor( LIS_tppLista pLista )
+{
+   pLista->pElemCorr->pAnt = NULL ;
+}
+
+void LIS_AtribuiLixoSucessor( LIS_tppLista pLista )
+{
+   pLista->pElemCorr->pProx = 'x';
+}
+
+void LIS_AtribuiLixoPredecessor( LIS_tppLista pLista )
+{
+   pLista->pElemCorr->pAnt = 'x';
+}
+
+
+#endif
 
 /***************************************************************************
 *

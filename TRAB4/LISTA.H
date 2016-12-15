@@ -105,6 +105,20 @@ typedef enum {
 } LIS_tpCondRet ;
 
 
+#ifdef _DEBUG
+tpElemLista * LIS_RetornaSucessor( LIS_tppLista pLista );
+tpElemLista * LIS_RetornaAntecessor( LIS_tppLista pLista );
+tpElemLista * LIS_RetornaCorrente( LIS_tppLista pLista  );
+int LIS_VerificaCorrenteNull( LIS_tppLista pLista);
+int LIS_QtdNos(LIS_tppLista pLista);
+int LIS_OrigemNula(LIS_tppLista pLista);
+void LIS_AlteraSucessor( LIS_tppLista pLista );
+void LIS_AlteraPredecessor( LIS_tppLista pLista );
+void LIS_AtribuiLixoSucessor( LIS_tppLista pLista );
+void LIS_AtribuiLixoPredecessor( LIS_tppLista pLista );
+
+#endif
+
 /***********************************************************************
 *
 *  $FC Função: LIS  &Criar lista
